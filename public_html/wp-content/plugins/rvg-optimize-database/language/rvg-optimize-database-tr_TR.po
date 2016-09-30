@@ -1,0 +1,582 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Optimize Database after Deleting Revisions v2.8.3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-03-07 23:11+0200\n"
+"PO-Revision-Date: 2016-03-07 23:12+0200\n"
+"Last-Translator: Rolf van Gelder <info@cagewebdev.com>\n"
+"Language-Team: Keremcan Buyuktaskin <keremcan@gmail.com>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.6.6\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: ./..\n"
+"X-Textdomain-Support: yes\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: classes/odb-cleaner.php:35
+msgid "Cleaning Database"
+msgstr "Veritabanı Temizleniyor"
+
+#: classes/odb-cleaner.php:87
+msgid "DELETED REVISIONS"
+msgstr "SİLİNEN REVİZYONLAR"
+
+#: classes/odb-cleaner.php:92 classes/odb-cleaner.php:152
+#: classes/odb-cleaner.php:213
+msgid "prefix"
+msgstr "ön ek"
+
+#: classes/odb-cleaner.php:93
+msgid "post / page"
+msgstr "yazı / sayfa"
+
+#: classes/odb-cleaner.php:94
+msgid "revision date"
+msgstr "revizyon tarihi"
+
+#: classes/odb-cleaner.php:95
+msgid "revisions deleted"
+msgstr "silinen revizyonlar"
+
+#: classes/odb-cleaner.php:107
+msgid "total number of revisions deleted"
+msgstr "silinen revizyonların toplam sayısı"
+
+#: classes/odb-cleaner.php:119
+msgid "No REVISIONS found to delete"
+msgstr "Silinecek REVİZYONLAR bulunamadı"
+
+#: classes/odb-cleaner.php:147
+msgid "DELETED TRASHED ITEMS"
+msgstr "SİLİNEN ÇÖP ÖĞELER"
+
+#: classes/odb-cleaner.php:153
+msgid "type"
+msgstr "tip"
+
+#: classes/odb-cleaner.php:154
+msgid "IP address / title"
+msgstr "IP adresi / başlığı"
+
+#: classes/odb-cleaner.php:155
+msgid "date"
+msgstr "tarih"
+
+#: classes/odb-cleaner.php:167
+msgid "total number of trashed items deleted"
+msgstr "silinen çöp öğelerin toplam sayısı"
+
+#: classes/odb-cleaner.php:180
+msgid "No TRASHED ITEMS found to delete"
+msgstr "Silinecek ÇÖP ÖĞELER bulunamadı"
+
+#: classes/odb-cleaner.php:208
+msgid "DELETEED SPAMMED ITEMS"
+msgstr "SİLİNEN SPAM ÖĞELER"
+
+#: classes/odb-cleaner.php:214
+msgid "comment author"
+msgstr "yorum yazarı"
+
+#: classes/odb-cleaner.php:215
+msgid "comment author email"
+msgstr "yorum yazarı epostası"
+
+#: classes/odb-cleaner.php:216
+msgid "comment date"
+msgstr "yorum tarihi"
+
+#: classes/odb-cleaner.php:228
+msgid "total number of spammed items deleted"
+msgstr "silinen spam öğelerin toplam sayısı"
+
+#: classes/odb-cleaner.php:241
+msgid "No SPAMMED ITEMS found to delete"
+msgstr "Silinecek SPAM ÖĞELER bulunamadı"
+
+#: classes/odb-cleaner.php:266
+msgid "NUMBER OF UNUSED TAGS DELETED"
+msgstr "SİLİNEN KULLANILMAYAN ETİKETLER SAYISI"
+
+#: classes/odb-cleaner.php:276
+msgid "No UNUSED TAGS found to delete"
+msgstr "Silinecek KULLANILMAYAN ETİKETLER bulunamadı"
+
+#: classes/odb-cleaner.php:300
+msgid "NUMBER OF EXPIRED TRANSIENTS DELETED"
+msgstr "SİLİNEN SÜRESİ DOLMUŞ GEÇİCİ ÖĞELER SAYISI"
+
+#: classes/odb-cleaner.php:310
+msgid "No EXPIRED TRANSIENTS found to delete"
+msgstr "Silinecek GEÇİCİ ÖĞELER bulunamadı"
+
+#: classes/odb-cleaner.php:334
+msgid "NUMBER OF PINGBACKS AND TRACKBACKS DELETED"
+msgstr "SİLİNEN GERİ PİNGLER VE GERİ İZLEMELER SAYISI"
+
+#: classes/odb-cleaner.php:344
+msgid "No PINGBACKS nor TRACKBACKS found to delete"
+msgstr "Silinecek GERİ PİNGLER veya GERİ İZLEMELER bulunamadı"
+
+#: classes/odb-cleaner.php:365
+msgid "NUMBER OF POSTMETA ORPHANS DELETED"
+msgstr "SİLİNEN POSTMETA SAHİPSİZ ÖĞELERİ SAYISI"
+
+#: classes/odb-cleaner.php:375
+msgid "No POSTMETA ORPHANS found to delete"
+msgstr "Silinecek POSTMETA SAHİPSİZ ÖĞELERİ bulunamadı"
+
+#: classes/odb-cleaner.php:403
+msgid "Optimizing Database Tables"
+msgstr "Veritabanı Tabloları Optimize Ediliyor"
+
+#: classes/odb-cleaner.php:410
+msgid "table name"
+msgstr "tablo adı"
+
+#: classes/odb-cleaner.php:411
+msgid "optimization result"
+msgstr "optimizasyon sonucu"
+
+#: classes/odb-cleaner.php:412
+msgid "engine"
+msgstr "motor"
+
+#: classes/odb-cleaner.php:413
+msgid "table rows"
+msgstr "tablo satırları"
+
+#: classes/odb-cleaner.php:414
+msgid "table size"
+msgstr "tablo boyutu"
+
+#: classes/odb-cleaner.php:462
+msgid "Savings"
+msgstr "Tasarruf"
+
+#: classes/odb-cleaner.php:469
+msgid "size of the database"
+msgstr "veritabanı boyutu"
+
+#: classes/odb-cleaner.php:472
+msgid "BEFORE optimization"
+msgstr "Optimizasyondan ÖNCE"
+
+#: classes/odb-cleaner.php:476
+msgid "AFTER optimization"
+msgstr "Optimizasyondan SONRA"
+
+#: classes/odb-cleaner.php:480
+msgid "SAVINGS THIS TIME"
+msgstr "ŞİMDİKİ TASARRUF"
+
+#: classes/odb-cleaner.php:484
+msgid "TOTAL SAVINGS SINCE THE FIRST RUN"
+msgstr "İLK ÇALIŞTIRMADAN BU YANA TOPLAM TASARRUF"
+
+#: classes/odb-cleaner.php:511
+msgid "DONE!"
+msgstr "TAMAMLANDI!"
+
+# Optimization took xxx seconds
+#: classes/odb-cleaner.php:516
+msgid "Optimization took"
+msgstr "Optimizasyon"
+
+# Optimization took xxx seconds
+#: classes/odb-cleaner.php:516
+msgid "seconds"
+msgstr "saniye sürdü"
+
+#: classes/odb-cleaner.php:524 classes/odb-displayer.php:144
+msgid "View Log File"
+msgstr "Kayıt Dosyasını Görüntüle"
+
+#: classes/odb-cleaner.php:526 classes/odb-displayer.php:146
+msgid "Delete Log File"
+msgstr "Kayıt Dosyasını Sil"
+
+#: classes/odb-cleaner.php:712
+msgid "of"
+msgstr ""
+
+#: classes/odb-cleaner.php:1150
+msgid "InnoDB table: skipped..."
+msgstr "InnoDB tablosu: atlandı..."
+
+#: classes/odb-cleaner.php:1156 classes/odb-cleaner.php:1158
+msgid "<span class=\"odb-optimized\">TABLE OPTIMIZED</span>"
+msgstr "<span class=\"odb-optimized\">TABLO OPTİMİZE EDİLDİ</span>"
+
+#: classes/odb-cleaner.php:1157
+msgid "Table is already up to date"
+msgstr "Tablo zaten güncel"
+
+#: classes/odb-displayer.php:28
+msgid "YES"
+msgstr "EVET"
+
+#: classes/odb-displayer.php:29
+msgid "NO"
+msgstr "HAYIR"
+
+#: classes/odb-displayer.php:41
+msgid "EVERY FIVE MINUTES"
+msgstr "BEŞ DAKİKADA BİR DEFA"
+
+#: classes/odb-displayer.php:43
+msgid "ONCE HOURLY"
+msgstr "SAATTE BİR DEFA"
+
+#: classes/odb-displayer.php:45
+msgid "TWICE DAILY"
+msgstr "GÜNDE İKİ DEFA"
+
+#: classes/odb-displayer.php:47
+msgid "ONCE DAILY"
+msgstr "GÜNDE BİR DEFA"
+
+#: classes/odb-displayer.php:49
+msgid "ONCE WEEKLY"
+msgstr "HAFTADA BİR DEFA"
+
+#: classes/odb-displayer.php:50 includes/settings-page.php:307
+msgid "NOT SCHEDULED"
+msgstr "AKTİF DEĞİL"
+
+#: classes/odb-displayer.php:55
+msgid "Current settings"
+msgstr "Güncel ayarlar"
+
+#: classes/odb-displayer.php:61 includes/settings-page.php:144
+#: includes/settings-page.php:228
+msgid "Delete revisions older than"
+msgstr "Bundan daha eski revizyonları sil"
+
+#: classes/odb-displayer.php:61
+msgid "days"
+msgstr "gün(ler)"
+
+#: classes/odb-displayer.php:64
+msgid "Maximum number of - most recent - revisions to keep per post / page"
+msgstr "Yazı / sayfa başına tutulacak maksimum - en güncel - revizyon sayısı"
+
+#: classes/odb-displayer.php:68 includes/settings-page.php:261
+msgid "Delete trashed items"
+msgstr "Çöp öğeleri sil"
+
+#: classes/odb-displayer.php:69 includes/settings-page.php:267
+msgid "Delete spammed items"
+msgstr "Spam öğeleri sil"
+
+#: classes/odb-displayer.php:70 includes/settings-page.php:273
+msgid "Delete unused tags"
+msgstr "Kullanılmayan etiketleri sil"
+
+#: classes/odb-displayer.php:71 includes/settings-page.php:279
+msgid "Delete expired transients"
+msgstr "Süresi dolmuş geçici öğeleri sil"
+
+#: classes/odb-displayer.php:72 includes/settings-page.php:285
+msgid "Delete pingbacks and trackbacks"
+msgstr "Geri pingleri ve geri izlemeleri sil"
+
+#: classes/odb-displayer.php:73 includes/settings-page.php:297
+msgid "Keep a log"
+msgstr "Bir kayıt dosyası tut"
+
+# @ rvg-optimize-database
+#: classes/odb-displayer.php:74
+msgid "Optimize InnoDB tables"
+msgstr "InnoDB tablolarını optimize et"
+
+#: classes/odb-displayer.php:75
+msgid "Last run"
+msgstr "En son çalıştırma"
+
+#: classes/odb-displayer.php:75 classes/odb-displayer.php:84
+#: includes/settings-page.php:338
+msgid "hrs"
+msgstr "saat"
+
+#: classes/odb-displayer.php:76
+msgid "Number of excluded tables"
+msgstr "Hariç tutulan tablo sayısı"
+
+#: classes/odb-displayer.php:77 includes/settings-page.php:303
+msgid "Scheduler"
+msgstr "Zamanlayıcı"
+
+#: classes/odb-displayer.php:84
+msgid "Next scheduled run"
+msgstr "Bir sonraki zamanlanmış çalıştırma"
+
+#: classes/odb-displayer.php:84
+msgid "current server time"
+msgstr "güncel sunucu saati"
+
+#: classes/odb-displayer.php:89
+msgid "Total savings since the first run"
+msgstr "İlk çalıştırmadan bu yana toplam tasarruf"
+
+#: classes/odb-displayer.php:106
+msgid "Optimize Database after Deleting Revisions"
+msgstr "Revizyonları Sildikten Sonra Veritabanını Optimize Et"
+
+#: classes/odb-displayer.php:109
+msgid ""
+"A popular 'one-click' plugin to clean and optimize your WordPress database."
+msgstr ""
+"WordPress veritabanını temizlemek ve optimize etmek için popüler bir 'tek-"
+"tık' eklentisi."
+
+#: classes/odb-displayer.php:112
+msgid "Plugin version"
+msgstr "Eklenti sürümü"
+
+#: classes/odb-displayer.php:113
+msgid "Plugin page"
+msgstr "Eklenti sayfası"
+
+#: classes/odb-displayer.php:114
+msgid "Download page"
+msgstr "İndirme sayfası"
+
+#: classes/odb-displayer.php:115
+msgid "Author"
+msgstr "Yazar"
+
+#: classes/odb-displayer.php:116
+msgid "Company"
+msgstr "Şirket"
+
+#: classes/odb-displayer.php:117
+msgid "Donation page"
+msgstr "Bağış sayfası"
+
+#: classes/odb-displayer.php:137
+msgid "Change Settings"
+msgstr "Ayarları Değiştir"
+
+#: classes/odb-displayer.php:153
+msgid "Start Optimization"
+msgstr "Optimizasyonu Başlat"
+
+#: classes/odb-logger.php:55
+msgid "A WordPress Plugin by"
+msgstr "tarafından bir Wordpress eklentisi"
+
+#: classes/odb-logger.php:55
+msgid "The Netherlands"
+msgstr "Paesi Bassi"
+
+#: classes/odb-logger.php:59
+msgid "time"
+msgstr "zaman"
+
+#: classes/odb-logger.php:60
+msgid "deleted<br />revisions"
+msgstr "silinen<br />revizyonlar"
+
+#: classes/odb-logger.php:61
+msgid "deleted<br />trash"
+msgstr "silinen<br />çöp öğeler"
+
+#: classes/odb-logger.php:62
+msgid "deleted<br />spam"
+msgstr "silinen<br />spam öğeler"
+
+#: classes/odb-logger.php:63
+msgid "deleted<br />tags"
+msgstr "silinen<br />etiketler"
+
+#: classes/odb-logger.php:64
+msgid "deleted<br />transients"
+msgstr "silinen<br />geçici öğeler"
+
+#: classes/odb-logger.php:65
+msgid "deleted<br />pingbacks<br />trackbacks"
+msgstr "silinen<br />geri pingler<br />geri izlemeler"
+
+#: classes/odb-logger.php:66
+msgid "deleted<br />orphans"
+msgstr "silinen<br />sahipsiz öğeler"
+
+# @ rvg-optimize-database
+#: classes/odb-logger.php:67
+msgid "nr of optimized tables"
+msgstr "optimize edilmiş tablo sayısı"
+
+#: classes/odb-logger.php:68
+msgid "database size BEFORE"
+msgstr "ÖNCEKİ veritabanı boyutu"
+
+#: classes/odb-logger.php:69
+msgid "database size AFTER"
+msgstr "SONRAKİ veritabanı boyutu"
+
+#: classes/odb-logger.php:70
+msgid "SAVINGS"
+msgstr "TASARRUF"
+
+# @ default
+#: classes/odb-scheduler.php:39
+msgid "Once Weekly"
+msgstr "Haftada Bir"
+
+#: classes/odb-scheduler.php:44
+msgid "Every Five Minutes"
+msgstr "Beş Dakikada Bir"
+
+#: includes/settings-page.php:106
+msgid "Optimize Database after Deleting Revisions SETTINGS UPDATED"
+msgstr "Optimize Database after Deleting Revisions AYARLAR GÜNCELLENDİ"
+
+#: includes/settings-page.php:108
+msgid ""
+"Click <a href=\"tools.php?page=rvg-optimize-database\" class=\"odb-bold"
+"\">HERE</a> to run the optimization"
+msgstr ""
+"Optimizasyonu çalıştırmak için <a href=\"tools.php?page=rvg-optimize-database"
+"\" class=\"odb-bold\">BURAYA</a> tıklayın"
+
+#: includes/settings-page.php:144
+msgid "You have to enter: "
+msgstr "Girmelisiniz:"
+
+#: includes/settings-page.php:149
+msgid "<Delete revisions older than> should be a number"
+msgstr "<Bundan daha eski revizyonları sil> bir sayı olmalı"
+
+#: includes/settings-page.php:157
+msgid "You have to enter the <Maximum number of revisions>"
+msgstr "<Maximum revizyon sayısı> girmelisiniz"
+
+#: includes/settings-page.php:162
+msgid "<Maximum number of revisions> should be a number"
+msgstr "<Maximum revizyon sayısı> bir sayı olmalı"
+
+#: includes/settings-page.php:224 rvg-optimize-database.php:400
+msgid "Settings"
+msgstr "Ayarlar"
+
+#: includes/settings-page.php:233
+msgid "day(s)"
+msgstr "gün(ler)"
+
+#: includes/settings-page.php:245
+msgid "Maximum number of - most recent - revisions<br>to keep per post / page"
+msgstr ""
+"Yazı / sayfa başına tutulacak<br>maksimum - en güncel - revizyon sayısı"
+
+#: includes/settings-page.php:251
+msgid "('0' means: delete <u>ALL</u> revisions)"
+msgstr "('0' <u>TÜM</u> revizyonları sil anlamına gelmektedir)"
+
+# @ rvg-optimize-database
+#: includes/settings-page.php:291
+msgid "Optimize InnoDB tables too"
+msgstr "InnoDB tablolarını da optimize et"
+
+#: includes/settings-page.php:310
+msgid "run optimization HOURLY"
+msgstr "optimizasyonu SAATTE BİR DEFA çalıştır"
+
+#: includes/settings-page.php:313
+msgid "run optimization TWICE A DAY"
+msgstr "optimizasyonu GÜNDE İKİ DEFA çalıştır"
+
+#: includes/settings-page.php:316
+msgid "run optimization DAILY"
+msgstr "optimizasyonu GÜNDE BİR DEFA çalıştır"
+
+#: includes/settings-page.php:319
+msgid "run optimization WEEKLY"
+msgstr "optimizasyonu HAFTADA BİR DEFA çalıştır"
+
+#: includes/settings-page.php:329
+msgid "Time"
+msgstr "Zaman"
+
+#: includes/settings-page.php:353
+msgid "Show '1-click' link in Admin Bar"
+msgstr " '1-tık' bağlantısını Yönetici Çubuğunda göster"
+
+#: includes/settings-page.php:359
+msgid "Show an icon in the Admin Menu"
+msgstr "Yönetici Menüsünde bir simge göster"
+
+#: includes/settings-page.php:364
+msgid "change will be visible after loading the next page"
+msgstr "değişiklik sonraki sayfa yüklendikten sonra görünür olacak"
+
+#: includes/settings-page.php:368
+msgid ""
+"EXCLUDE DATABASE TABLES FROM OPTIMIZATION:<br><span class=\"odb-underline-red"
+"\">CHECKED</span> TABLES <span class=\"odb-underline-red\">WON'T</span> BE "
+"OPTIMIZED!</span>"
+msgstr ""
+"VERİTABANI TABLOLARINI OPTİMİZASYONDAN HARİÇ TUT:<br><span class=\"odb-"
+"underline-red\">SEÇİLİ </span> TABLOLAR OPTİMİZE <span class=\"odb-underline-"
+"red\">EDİLMEYECEKLER!</span>"
+
+#: includes/settings-page.php:374
+msgid "check all tables"
+msgstr "bütün tabloları seç"
+
+#: includes/settings-page.php:376
+msgid "uncheck all tables"
+msgstr "hiçbir tabloyu seçme"
+
+#: includes/settings-page.php:378
+msgid "check all NON-WordPress tables"
+msgstr "bütün WordPress-OLMAYAN tabloları seç"
+
+#: includes/settings-page.php:405
+msgid "Save Settings"
+msgstr "Ayarları Kaydet"
+
+#: includes/settings-page.php:407
+msgid "Go To Optimizer"
+msgstr "Optimize Ediciye Git"
+
+# @ rvg-optimize-database
+#: rvg-optimize-database.php:372 rvg-optimize-database.php:373
+#: rvg-optimize-database.php:387 rvg-optimize-database.php:388
+#: rvg-optimize-database.php:430 rvg-optimize-database.php:431
+#: rvg-optimize-database.php:449 rvg-optimize-database.php:450
+msgid "Optimize Database"
+msgstr "Veritabanını Optimize Et"
+
+# @ optimize_db
+#: rvg-optimize-database.php:417
+msgid "Optimize DB (1 click)"
+msgstr "VT Optimize Et (1 tık)"
+
+#: rvg-optimize-database.php:550
+msgid "Optimize Database after Deleting Revisions LOG FILE HAS BEEN DELETED"
+msgstr "Optimize Database after Deleting Revisions KAYIT DOSYASI SİLİNDİ"
+
+#~ msgid ""
+#~ "Click <a href=\"tools.php?page=rvg-optimize-db.php\" class=\"odb-bold"
+#~ "\">HERE</a> to run the optimization"
+#~ msgstr ""
+#~ "Clicca <a href=\"tools.php?page=rvg-optimize-db.php\" class=\"odb-bold"
+#~ "\">QUI</a> per eseguire l'ottimizzazione"
+
+#~ msgid "is an one-click plugin to clean and optimize your WordPress database"
+#~ msgstr ""
+#~ "è un plugin per pulire e ottimizzare il vostro database Wordpress con un "
+#~ "click"
+
+#~ msgid ""
+#~ "Maximum number of - most recent - revisions<br />to keep per post / page"
+#~ msgstr ""
+#~ "Numero massimo di revisioni - più recenti -<br />da mantenere per ogni "
+#~ "articolo/pagina"

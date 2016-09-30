@@ -1,0 +1,129 @@
+::-webkit-input-placeholder
+	color $branco
+
+:-moz-placeholder
+	color $branco  
+
+::-moz-placeholder
+	color $branco  
+
+:-ms-input-placeholder 
+	color $branco  
+
+.contato-form-wrapper		
+	input
+	textarea
+		-webkit-appearance none
+		-moz-appearance none
+		min-height 36px
+		font-family Arial
+		width 100%
+		font-size 14px
+		color $branco
+		background-color $cinza-3
+		border none
+		padding 10px
+		transition background-color .3s ease
+		resize none
+		border-radius 0
+		font-family 'Josefin Sans', Helvetica Neue, Arial, sans-serif
+		text-transform uppercase
+		margin 0
+		@media(max-width:767px)
+			min-height 50px
+			
+		@media(min-width:991px)
+			min-height 100px
+			font-size 24px
+		
+		&:focus
+			background-color $cinza-4
+		&:hover
+			background-color $cinza-5
+		&[type=submit]
+			display block
+			color $branco
+			background-color $amarelo
+			text-transform uppercase
+			font-weight bold
+			cursor pointer
+			padding 5px 20px
+			&:hover
+				background-color $roxo
+
+$amarelinho = #fff5cc
+$verdinho = #d6e5e6
+
+span.wpcf7-not-valid-tip
+div.wpcf7-response-output
+	padding 8px 10px
+	display block
+	font-size 10px
+	@media(min-width:991px)
+		font-size 20px
+	
+	
+span.wpcf7-not-valid-tip
+	color $branco
+	background-color rgba($vermelho,.8)
+
+div.wpcf7-response-output
+	margin 0
+
+div.wpcf7-validation-errors
+	color $cinza-1
+	border none
+	background-color $amarelinho
+
+div.wpcf7-mail-sent-ok
+	color $cinza-1
+	border none
+	background-color $verdinho 
+	@media(min-width:991px)
+		font-size 30px
+
+div.screen-reader-response
+div.wpcf7-display-none
+	display none
+	
+.wpcf7
+	img.ajax-loader { display: none; }
+	
+/* Login form */
+#form-login
+	.login-username
+	.login-password
+	.login-remember
+		float left
+		width (100 / 3)%
+		
+/* Passprotected */
+.post-password-form
+	background-color rgba(99,99,99,.4)
+	padding 25px
+	margin 60px auto 20px
+	width 300px
+	color #fff
+		
+	[type=password]
+		display block
+		width 100%
+		min-height 38px
+		
+	[type=submit]
+		display block
+		width 100%
+		margin-top 25px
+		background-color #555
+		color #fff
+		border none
+		-webkit-appearance none
+		padding 10px
+		font-size 16px
+		cursor pointer
+		margin-top 25px
+		
+		&:hover
+			background-color #888
+
+	

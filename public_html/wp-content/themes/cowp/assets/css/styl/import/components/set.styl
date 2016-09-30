@@ -1,0 +1,443 @@
+#page-content
+	.container
+	.row
+	.col-md-12
+		width 100%
+		margin 0
+		padding 0
+
+.mosaic
+	margin 0 auto
+	@media(min-width:768px)
+		max-width 760px
+
+	@media(min-width:992px)
+		max-width 982px
+
+	@media(min-width:1220px)
+		max-width 1200px
+
+	@media(min-width:1440px)
+		max-width 1420px
+
+	@media(min-width:1680px)
+		max-width 1640px
+
+.mosaic
+.archive-list
+	&::after
+		content ''
+		display block
+		clear both
+
+	@media(min-width:992px)
+		&:hover
+			.gray-item
+				filter url($graysvg)
+				filter grayscale($grayscale_nv)
+				-webkit-filter grayscale($grayscale_nv)
+
+				&:hover
+					filter none
+
+			.blur-item
+				.item-container
+					filter blur(1px)
+				&:hover
+					.item-container
+						filter none
+
+.set
+	&.isadmin
+		.type-void
+			.item-container
+				background-color #fff
+				opacity 0
+			&:hover
+				.item-container
+					opacity 0.4
+					transition opacity .3s ease
+		.type-video
+			&::after
+				content ''
+				display block
+				position absolute
+				left 0
+				top 0
+				width 100%
+				height 100%
+				background-color #fff
+				opacity 0.0
+				z-index 9999
+				visibility hidden
+				transition opacity .3s ease, visibility .3s ease
+				cursor move
+
+			&.is-dragging
+				&::after
+					visibility visible
+					opacity 0.4
+
+
+@media(min-width:992px)
+	.scale-item
+		.item-container
+			transition transform .3s ease
+		&:hover
+			.item-container
+				transform scale(1.05)
+
+.mosaic-sizer
+	display inline-block
+	width (100/$ncols)%
+	padding-bottom (100/$ncols)%
+	position absolute
+
+	@media(max-width:767px)
+		width 33.333333333%
+		padding-bottom 0
+
+	@media(min-width:480px) and (max-width:767px)
+		&.mobile-full
+			width 50%
+			padding-bottom 50%
+
+.mosaic-item
+	overflow hidden
+	@media(min-width:768px)
+		for col in (1..$ncols)
+			&.w{col}
+				width $col_width*col
+				for row in (1..$nrows)
+						&.h{row}
+							.item-container
+								padding-bottom (100%/col)*row
+
+								if row > 1 && col < 4
+									background-position center top
+
+	@media(max-width:767px)
+		for col in (1..$ncols)
+			&.w{col}
+				if col < 6
+					width 33.33333333%
+					.item-container
+						padding-bottom 100%
+				else
+					width 100%
+					.item-container
+						padding-bottom 33.33333333%
+
+		&.mobile-full
+			width 50%
+			.item-container
+				padding-bottom 100%
+
+	@media(max-width:480px)
+		&.mobile-full
+			width 100%
+			.item-container
+				padding-bottom 100%
+
+
+
+.mosaic-item
+	&.type-texto
+	&.type-video
+		.text-sizer
+		iframe
+			position absolute
+			left 0
+			top 0
+			height 100%
+			width 100%
+		.item-container
+			visibility hidden
+
+	&.type-texto
+		.text-sizer
+			background-color rgba(#333,0.6)
+			padding 20px 40px
+			color #ccc
+			font-size 16px
+
+		h1
+			font-size 42px
+		h2
+			font-size 32px
+		h3
+			font-size 28px
+		h4
+			font-size 22px
+		h5
+			font-size 20px
+		h6
+			font-size 18px
+
+		@media(max-width:991px)
+			h1
+				font-size 32px
+			h2
+				font-size 28px
+			h3
+				font-size 22px
+			h4
+			h5
+				font-size 18px
+
+		.text-container
+			position relative
+			top 50%
+			transform translateY(-50%)
+
+			> *
+				line-height 140%
+
+				+ *
+					margin-top 15px
+
+			li
+				margin-left 17px
+				+ li
+					margin-top 10px
+
+		&.h1
+			.text-container
+				li
+					+ li
+						margin-top 0
+
+	@media(max-width:1200px)
+		&.type-texto
+			.text-sizer
+				font-size 14px
+
+	@media(max-width:991px)
+		&.type-texto
+			.text-sizer
+				font-size 12px
+				line-height 160%
+				padding 20px
+
+	@media(max-width:767px)
+		&.type-void
+			display none
+
+		&.type-texto
+			width 100%
+			.item-container
+				display none
+
+			.text-sizer
+				font-size 14px
+				position static
+
+			.text-container
+				top 0
+				transform none
+
+		&.type-video
+			width 100%
+
+			.item-container
+				padding-bottom 66.66666666%
+
+/* Topo set */
+.set .stamp.card-set
+	float none
+
+.set .stamp.card-set
+.main-slider .card-set
+	.item-container
+		filter url($graysvg)
+		filter grayscale($grayscale_nv)
+		-webkit-filter grayscale($grayscale_nv)
+
+	@media(max-width:767px)
+		.item-container
+			padding-bottom 66.66666666%
+
+	@media(max-width:480px)
+		.item-container
+			padding-bottom 100%
+
+
+.title-cell
+	position absolute
+	top 50%
+	left 0
+	width 100%
+	transform translateY(-50%)
+	padding 0 30px
+	text-align center
+
+.title-wrapper
+	position absolute
+	left 0
+	top 0
+	width 100%
+	height 100%
+	opacity 1
+	transition all .5s ease
+	background-color rgba(#000, 0.3)
+	z-index 101
+
+	h1
+	h2
+		padding 10px 15px 5px 15px
+		border 2px solid #fff
+		text-transform uppercase
+		font-weight 400
+		transition all .3s ease, opacity .3s ease .2s
+		background-color rgba(255,255,255, 0.3)
+		display inline-block
+		text-shadow 0px 0px 8px rgba(63, 63, 63, 1),0 0 16px #999
+
+.set-info
+	margin-top 15px
+	padding 0 10px
+	text-shadow 0 0 8px #222,0 0 16px #111
+
+	.more-info
+		opacity .8
+		font-family 'Josefin Sans'
+		color #fff
+
+	.extra-info
+		margin-top 25px
+		p
+			line-height 140%
+			font-size 18px
+
+
+	.date
+		display block
+		font-size 30px
+
+	.at
+		margin-top 5px
+		display block
+		font-size 28px
+
+		a
+			color #fff
+			transition color .3s ease
+
+			&:hover
+				color $azul
+
+	.fotografos
+		margin-top 15px
+		display inline-block
+		opacity 1
+
+		img
+			transition all .3s ease
+			border-radius 50%
+			max-width 52px
+			height auto
+
+		a
+			display inline-block
+			margin 5px
+			position relative
+			transition all .3s ease
+			opacity .7
+
+			&:hover
+				opacity 1
+				img
+					transform scale(1.1)
+
+				&::after
+				&::before
+					opacity 1
+					visibility visible
+
+				&::before
+					bottom -14px
+
+				&::after
+					bottom -35px
+
+			&::before
+			&::after
+				opacity 0
+				transition bottom .4s ease
+				visibility hidden
+				position absolute
+				display block
+
+			&::before
+				content ''
+				width 0
+				height 0
+				border-style solid
+				border-width 0 8px 8px 8px
+				border-color transparent transparent #333 transparent
+				bottom -3px
+				left 19px
+
+			&::after
+				text-align center
+				content attr(data-name)
+				padding 5px
+				background-color #333
+				color #fff
+				bottom -25px
+				min-width 150px
+				border-radius 3px
+				font-size 12px
+
+		@media(max-width:480px)
+			img
+				max-width 42px
+
+			a::before
+				left 15px
+
+@media(max-width:991px)
+	.title-wrapper
+		h1
+		h2
+			font-size 22px
+
+	.set-info
+		.at
+		.date
+			font-size 20px
+
+		.extra-info
+			p
+				font-size 18px
+
+@media(max-width:480px)
+	.set
+		.title-wrapper h1
+		.title-wrapper h2
+		.set-info .at
+		.set-info .date
+			font-size 16px
+
+		.set-info .extra-info
+			margin-top 15px
+			p
+				font-size 14px
+
+.item-container
+	background-position center
+	background-repeat no-repeat
+	background-size cover
+
+.card-set
+	position relative
+	float left
+	transition filter .3s ease, -webkit-filter .3s ease
+	user-select none
+
+	&:hover
+		color $branco
+		z-index 101
+
+	&.is-dragging
+		z-index 101

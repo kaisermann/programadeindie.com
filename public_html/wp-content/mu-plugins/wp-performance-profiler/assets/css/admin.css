@@ -1,0 +1,71 @@
+/**
+ * Default table styles
+ */
+.icit-profiler-table {
+    width: 100%;
+    margin-bottom: 2em;
+}
+.icit-profiler-table th,
+.icit-profiler-table td {
+    text-align: left;
+    padding: 2px 5px;
+}
+.icit-profiler-table-summary tr:nth-child(odd) {
+    background: #E7E7E7;
+}
+.icit-profiler-table .numeric-column {
+    text-align: right;
+}
+
+.icit-profiler-table-zebra th {
+    background: #222;
+    color: #FFF;
+    padding: 5px;
+}
+.icit-profiler-table-zebra tr:nth-child(odd) {
+    background: #E7E7E7;
+}
+
+
+/**
+ * Detailed table
+ */
+.icit-profiler-table-functions .summary:hover {
+    cursor: pointer;
+}
+.icit-profiler-table-functions .detail {
+    display: none;
+}
+
+
+/**
+ * Filters
+ */
+.icit-profiler-filters input,
+.icit-profiler-filters select {
+    width: 100%;
+}
+
+
+/**
+ * Pagination
+ */
+.icit-profiler-pagination {
+    text-align: center;
+}
+.icit-profiler-pagination .page-number {
+    display: inline-block;
+    padding: 5px;
+    height: 1.5em;
+    width: 1.5em;
+    line-height: 1.5em;
+    background: #E7E7E7;
+    color: #222;
+    text-decoration: none;
+    margin: 0 1px;
+}
+.icit-profiler-pagination .page-number-active {
+    background: #222;
+    color: #FFF;
+    font-weight: bold;
+}

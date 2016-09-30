@@ -1,0 +1,12 @@
+/ssl.*
+*.log
+
+.DS_Store
+error_log
+wp-config.php
+
+**/wp-content/uploads/
+**/wp-content/cache/
+**/wp-content/backups/
+**/node_modules/
+**/bower_components/
