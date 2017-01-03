@@ -11,13 +11,13 @@ function initMosaic($mos)
 		// se estamos no set
 		if($gal.length>0)
 		{
-			var $as = $(".mosaic .card-set.type-imagem a").one("mouseenter", function() 
-			{ 
+			var $as = $(".mosaic .card-set.type-imagem a").one("mouseenter", function()
+			{
 				var img_link = $(this);
 				preloadImage(img_link.attr("data-realhref"), function()
 				{
 					img_link.addClass("preloaded");
-				}); 
+				});
 			});
 
 			var wid = $(window).innerWidth();
@@ -61,11 +61,11 @@ function initMosaic($mos)
 			itemSelector: '.mosaic-item',
 			columnWidth: '.mosaic-sizer',
 			rowHeight: '.mosaic-sizer',
-			"percentPosition": true
+			percentPosition: false
 		});
 
 		if (typeof loadSetAdmin == 'function')
-			loadSetAdmin(); 
+			loadSetAdmin();
 		$mos.packery( 'layout' );
 
 
@@ -75,7 +75,7 @@ function initMosaic($mos)
 function textResize()
 {
 	var win_wid = $(window).innerWidth();
-	var doFontResize = function(_,__,i,min) 
+	var doFontResize = function(_,__,i,min)
 	{
 		__.find("p,ul").css("font-size",i+"px");
 		var boxheight = _.height();
@@ -104,7 +104,7 @@ function textResize()
 }
 
 function toggleLoading(elem, show, id, fixed)
-{	
+{
 	fixed = fixed == false || fixed === undefined ? false : true;
 	id = id === undefined ? "" : id;
 
@@ -141,7 +141,7 @@ function scrollToElem(selector, offset)
 
 function configurePhotoSwipe($as)
 {
-	var getItems = function() 
+	var getItems = function()
 	{
 		var items = [];
 		$as.each(function() {
@@ -164,16 +164,16 @@ function configurePhotoSwipe($as)
 
 	var openPhotoSwipe = function($index,fromURL)
 	{
-		var options = 
+		var options =
 		{
 			index: $index,
 			bgOpacity: 0.7,
 			showHideOpacity: true,
-			getThumbBoundsFn: function(index) 
+			getThumbBoundsFn: function(index)
 			{
 				var thumbnail = document.querySelectorAll('.mosaic .card-set.type-imagem')[index].querySelectorAll("a")[0];
-				var pageYScroll = window.pageYOffset || document.documentElement.scrollTop; 
-				var rect = thumbnail.getBoundingClientRect(); 
+				var pageYScroll = window.pageYOffset || document.documentElement.scrollTop;
+				var rect = thumbnail.getBoundingClientRect();
 
 				return {x:rect.left, y:rect.top + pageYScroll, w:rect.width};
 			},
@@ -181,20 +181,20 @@ function configurePhotoSwipe($as)
 		}
 
 		var lightBox = new PhotoSwipe($('.pswp')[0], PhotoSwipeUI_Default, getItems(), options);
-		lightBox.listen('close', function() 
+		lightBox.listen('close', function()
 		{
 			changeLocation(set_url);
 		});
-		lightBox.listen('afterChange', function() 
+		lightBox.listen('afterChange', function()
 		{
-			changeLocation(lightBox.currItem.slug);		
+			changeLocation(lightBox.currItem.slug);
 			if(typeof window.ga == "function")
-				ga('send', 'pageview', lightBox.currItem.slug);	
+				ga('send', 'pageview', lightBox.currItem.slug);
 		});
 		lightBox.init();
 	};
 
-	$as.on("click",function(e) 
+	$as.on("click",function(e)
 	{
 		e.preventDefault();
 		$card = $(this).parent();
