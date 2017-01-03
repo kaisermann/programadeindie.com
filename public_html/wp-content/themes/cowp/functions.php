@@ -1,8 +1,8 @@
 <?php
-require_once "includes/functions-ajax.php"; 
-require_once "includes/functions-prints.php"; 
+require_once "includes/functions-ajax.php";
+require_once "includes/functions-prints.php";
 
-class Programadeindie 
+class Programadeindie
 {
 	const n_cols = 6;
 	const n_rows = 3;
@@ -12,7 +12,7 @@ class Programadeindie
 	private $grid_width = 1200;
 	private $photo_max_height = 800;
 
-	function __construct() 
+	function __construct()
 	{
 		$hooks = array(
 			'add_action' => array(
@@ -36,7 +36,7 @@ class Programadeindie
 			'add_filter' => array(
 				array('attachment_link'),
 				array('jpeg_quality'),
-				array('manage_edit-evento_columns'),	
+				array('manage_edit-evento_columns'),
 				array('manage_edit-lugar_columns'),
 				array('post_type_link', 10, 2),
 				array('rewrite_rules_array'),
@@ -55,7 +55,7 @@ class Programadeindie
 			$hook_name = explode('_', $hook);
 			$hook_name = $hook_name[1];
 
-			foreach ($hooks_names as $hook_params) 
+			foreach ($hooks_names as $hook_params)
 			{
 				array_splice($hook_params, 1, 0, '');
 				$method_name = str_replace(array("-",".php"), array("_",""), $hook_params[0]);
@@ -74,7 +74,7 @@ class Programadeindie
 		new PI_Ajax();
 	}
 
-	/* 
+	/*
 	/  Actions
 	*/
 
@@ -83,24 +83,24 @@ class Programadeindie
 	{
 		global $wp_taxonomies;
 
-		$wp_taxonomies['lugar']->cap->assign_terms = 
-		$wp_taxonomies['lugar']->cap->manage_terms = 
-		$wp_taxonomies['lugar']->cap->edit_terms = 
-		$wp_taxonomies['evento']->cap->assign_terms = 
-		$wp_taxonomies['evento']->cap->edit_terms = 
+		$wp_taxonomies['lugar']->cap->assign_terms =
+		$wp_taxonomies['lugar']->cap->manage_terms =
+		$wp_taxonomies['lugar']->cap->edit_terms =
+		$wp_taxonomies['evento']->cap->assign_terms =
+		$wp_taxonomies['evento']->cap->edit_terms =
 		$wp_taxonomies['evento']->cap->manage_terms = 'edit_set_info';
 
 		add_post_type_support( 'page', 'excerpt' );
 
 	}
 
-	function action__admin_init() 
+	function action__admin_init()
 	{
 		$role = get_role("administrator");
 
 		$admin_set_caps = array(
-			"edit_set_info", 
-			"edit_sets", 
+			"edit_set_info",
+			"edit_sets",
 			"delete_others_sets",
 			"delete_private_sets",
 			"delete_published_sets",
@@ -115,7 +115,7 @@ class Programadeindie
 			);
 
 		foreach ($admin_set_caps as $cap)
-			$role->add_cap($cap); 
+			$role->add_cap($cap);
 	}
 
 	function action__admin_bar_menu($wp_admin_bar)
@@ -140,7 +140,7 @@ class Programadeindie
 	function action__admin_footer_edit_tags()
 	{
 		global $current_screen;
-		switch ( $current_screen->id ) 
+		switch ( $current_screen->id )
 		{
 			case 'edit-category':
 			break;
@@ -165,15 +165,15 @@ class Programadeindie
 		}
 
 		// Sets Pendentes
-		$count_posts = wp_count_posts('set'); 
+		$count_posts = wp_count_posts('set');
 		$pending_count = $count_posts->pending;
 		$pageName = _x("A ser revisado", "cowp");
 		$pageName .= " <span class='update-plugins count-1'><span class='update-count'>$pending_count</span></span>";
-		add_submenu_page( 'edit.php?post_type=set', _x("Sets a serem revisados", "cowp"), $pageName, 'manage_options', 'edit.php?post_type=set&post_status=pending' ); 
+		add_submenu_page( 'edit.php?post_type=set', _x("Sets a serem revisados", "cowp"), $pageName, 'manage_options', 'edit.php?post_type=set&post_status=pending' );
 
 	}
 
-	function action__after_setup_theme() 
+	function action__after_setup_theme()
 	{
 		register_nav_menu( 'principal', __( 'Menu Principal', 'cowp' ) );
 		add_theme_support( 'post-thumbnails' );
@@ -189,7 +189,7 @@ class Programadeindie
 			'fotografo',
 			__( 'Fotografo' ),
 			array(
-				'delete_sets' => true,  
+				'delete_sets' => true,
 				'edit_set_info'   => true,
 				'edit_published_sets' => true,
 				'edit_sets' => true,
@@ -199,33 +199,33 @@ class Programadeindie
 			);
 	}
 
-	function action__manage_users_columns($column_headers) 
+	function action__manage_users_columns($column_headers)
 	{
 		unset($column_headers['posts']);
  		//$column_headers['sets'] = 'Sets';
 		return $column_headers;
 	}
 
-	function action__pre_get_posts( $query ) 
+	function action__pre_get_posts( $query )
 	{
 		if ((is_home() || is_archive()) && $query->is_main_query() )
 			$query->set('post_type', array('set'));
 		return $query;
 	}
 
-	function action__save_post( $post_id, $post ) 
+	function action__save_post( $post_id, $post )
 	{
-		if ($post->post_type === 'set' ) 
+		if ($post->post_type === 'set' )
 		{
 			$defaults = array(
 				'evento' => array( 'blablabla' ),
 				'lugar' => array( 'lugar-nenhum' )
 				);
 			$taxonomies = get_object_taxonomies( $post->post_type );
-			foreach ( (array) $taxonomies as $taxonomy ) 
+			foreach ( (array) $taxonomies as $taxonomy )
 			{
 				$terms = wp_get_post_terms( $post_id, $taxonomy );
-				if ( empty( $terms ) && array_key_exists( $taxonomy, $defaults ) ) 
+				if ( empty( $terms ) && array_key_exists( $taxonomy, $defaults ) )
 				{
 					wp_set_object_terms( $post_id, $defaults[$taxonomy], $taxonomy );
 				}
@@ -233,7 +233,7 @@ class Programadeindie
 		}
 	}
 
-	function action__wp_enqueue_scripts() 
+	function action__wp_enqueue_scripts()
 	{
 		global $post;
 
@@ -261,8 +261,8 @@ class Programadeindie
 	function action__wp_footer() { echo "<script>var ajax_request_url = '".admin_url( 'admin-ajax.php' )."'</script>"; }
 
 	function action__wp_head()
-	{ 
-		global $post; 
+	{
+		global $post;
 		self::$can_edit_photos = (is_user_logged_in() && current_user_can('edit_set', $post->ID));
 
 		if(!self::$can_edit_photos)
@@ -389,7 +389,7 @@ border: none !important
 			$fotografos .= " & ".$f->display_name;
 
 		return ((strlen($ex)>0)?$ex.' | ':'').
-		$set_info['data'] . 
+		$set_info['data'] .
 		' | '.
 		'@'.$set_info['local'].
 		' - '.
@@ -407,11 +407,11 @@ border: none !important
 	function filter__the_password_form($o) {
 		$o = '<form class="post-password-form" action="'.wp_login_url().'?action=postpass" method="post"><input name="post_password" type="password"/><input type="submit" name="Submit" value="' . esc_attr__( "Submit" ) . '" /></form>';
 		return $o;
-	}	
+	}
 
-	function filter__posts_where( $where = '' ) 
+	function filter__posts_where( $where = '' )
 	{
-		if (!is_single() && !is_admin()) 
+		if (!is_single() && !is_admin())
 			$where .= " AND post_password = ''";
 		return $where;
 	}
@@ -428,7 +428,7 @@ border: none !important
     	if(!is_array($sources))
        		return $sources;
 
-		foreach($sources as &$source) 
+		foreach($sources as &$source)
 			$source['url'] = $this->replace_media_url($source['url']);
 
 		return $sources;
@@ -459,12 +459,14 @@ border: none !important
 				if($i==self::n_cols && $ii==self::n_rows)
 				{
 					$height = $this->photo_max_height;
-					add_image_size($name, $width, $height); 
+					add_image_size($name, $width, $height);
 				}
 				else
-					add_image_size($name, $width, round($height), array('center', ($i<4 && $ii>1)?'top':'center')); 
+					add_image_size($name, $width, round($height), array('center', ($i<4 && $ii>1)?'top':'center'));
 			}
 		}
+		
+		add_image_size('avatar-64', 64, 64, ['center','center']);
 	}
 
 	private function add_post_types()

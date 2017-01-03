@@ -1,0 +1,16 @@
+{
+  "transport": "ftp",
+  "uploadOnSave": true,
+  "useAtomicWrites": false,
+  "deleteLocal": false,
+  "hostname": "ftp.kaisermann.me",
+  "port": "21",
+  "ignore": [
+    ".remote-sync.json",
+    ".git/**"
+  ],
+  "username": "programadeindie",
+  "password": "T8?IdtJjiOJ&oC0w",
+  "watch": [],
+  "target": "/"
+}

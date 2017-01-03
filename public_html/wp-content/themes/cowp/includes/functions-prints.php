@@ -38,7 +38,7 @@ function print_inner_set()
 						<div class="more-info">
 							<?php $link_lugar = get_term_link($set_info['lugar']); ?>
 							<span class="date"><?php echo $set_info['data']; ?></span>
-							<?php 
+							<?php
 							echo '<span class="at">@'.$set_info['local'].' - '.$set_info['bairro'].' | '.$set_info['cidade'].'</span>';
 							?>
 						</div>
@@ -50,7 +50,7 @@ function print_inner_set()
 	<?php
 }
 
-function print_home_set($setsize, $isslide = false) 
+function print_home_set($setsize, $isslide = false)
 {
 	global $post;
 	$set_info = ProgramadeIndie::get_set_info($post->ID, $setsize);
@@ -68,7 +68,7 @@ function print_home_set($setsize, $isslide = false)
 					<div class="more-info">
 						<?php $link_lugar = get_term_link($set_info['lugar']); ?>
 						<span class="date"><?php echo $set_info['data']; ?></span>
-						<?php 
+						<?php
 						echo '<span class="at">@'.$set_info['local'].' - '.$set_info['bairro'].' | '.$set_info['cidade'].'</span>';
 						?>
 					</div>
@@ -76,7 +76,7 @@ function print_home_set($setsize, $isslide = false)
 			</div>
 		</div>
 	</a>
-	<?php 
+	<?php
 }
 
 function print_admin_set_controls($sizeclass, $icon_move=true, $icon_size=true)
@@ -115,8 +115,8 @@ function print_fotografo()
 {
 	?>
 	<div class="author-meta-box">
-		<section class="avatar">	
-			<?php echo get_avatar(get_the_author_meta("ID"), 256); ?>
+		<section class="avatar">
+			<?php echo get_avatar(get_the_author_meta("ID"), 64); ?>
 		</section>
 		<section class="bio">
 			<h2>
