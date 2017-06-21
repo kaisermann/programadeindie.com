@@ -1,0 +1,37 @@
+{
+  "project": {
+    "repo": "git@github.com:kaisermann/projeto-programadeindie.com.git",
+    "type": "simple-wordpress",
+    "fileStructure": {
+      "shared": [
+        ["robots.txt"],
+        [".htaccess"],
+        ["wp-config.php"],
+        ["wp-content/uploads", "uploads"]
+      ]
+    },
+    "cmds": {
+      "install": [],
+      "afterDeploy": [
+        ["", "rm -rf fabfile.py arke.json .arke readme.md .editorconfig"]
+      ]
+    },
+    "maxReleases": 5
+  },
+  "hosts": {
+    "bottura": {
+      "hosts": ["bottura"],
+      "name": "programadeindie.com",
+      "projectDir": "/var/www",
+      "projectPublicDir": "htdocs",
+      "webRootDir": "",
+      "hostnames": "programadeindie.com www.programadeindie.com",
+      "webServerUser": "www-data",
+      "webServerGroup": "www-data",
+      "services": {
+        "toRestart": ["php5.6-fpm"],
+        "toReload": ["nginx"]
+      }
+    }
+  }
+}
