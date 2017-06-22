@@ -74,13 +74,17 @@ class WPSEO_Plugin_Availability {
 	 * Sets certain plugin properties based on WordPress' status.
 	 */
 	protected function register_yoast_plugins_status() {
-		$installed_plugins = get_plugins();
 
 		foreach ( $this->plugins as $name => $plugin ) {
-			if ( isset( $installed_plugins[ $plugin['slug'] ] ) ) {
+
+			$plugin_slug = $plugin['slug'];
+			$plugin_path = WP_PLUGIN_DIR . '/' . $plugin_slug;
+
+			if ( file_exists( $plugin_path ) ) {
+				$plugin_data                         = get_plugin_data( $plugin_path, false, false );
 				$this->plugins[ $name ]['installed'] = true;
-				$this->plugins[ $name ]['version'] = $installed_plugins[ $plugin['slug'] ]['Version'];
-				$this->plugins[ $name ]['active'] = is_plugin_active( $plugin['slug'] );
+				$this->plugins[ $name ]['version']   = $plugin_data['Version'];
+				$this->plugins[ $name ]['active']    = is_plugin_active( $plugin_slug );
 			}
 		}
 	}
@@ -204,9 +208,9 @@ class WPSEO_Plugin_Availability {
 	public function get_installed_plugins() {
 		$installed = array();
 
-		foreach ( $this->plugins as $pluginKey => $plugin ) {
+		foreach ( $this->plugins as $plugin_key => $plugin ) {
 			if ( $this->is_installed( $plugin ) ) {
-				$installed[ $pluginKey ] = $plugin;
+				$installed[ $plugin_key ] = $plugin;
 			}
 		}
 

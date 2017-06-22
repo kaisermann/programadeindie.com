@@ -1824,7 +1824,7 @@ div.wpcf7-display-none {
   position: relative;
   z-index: 9901;
   border-radius: 50%;
-  max-width: 100px;
+  max-width: 100px !important;
   height: auto;
   display: inline-block;
   vertical-align: middle;

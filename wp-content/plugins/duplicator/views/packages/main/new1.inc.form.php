@@ -21,7 +21,6 @@
     span#dup-archive-filter-db {color:#A62426; display:none}
     div#dup-file-filter-items, div#dup-db-filter-items {padding:5px 0;}
 	div#dup-db-filter-items {font-stretch:ultra-condensed; font-family:Calibri; }
-    label.dup-enable-filters {display:inline-block; margin:-5px 0 5px 0}
     div.dup-quick-links {font-size:11px; float:right; display:inline-block; margin-top:2px; font-style:italic}
     div.dup-tabs-opts-help {font-style:italic; font-size:11px; margin:10px 0 0 10px; color:#777}
     table#dup-dbtables td {padding:1px 15px 1px 4px}
@@ -30,12 +29,15 @@
 	div.dup-store-pro img {height:14px; width:14px; vertical-align:text-top}
 	div.dup-store-pro a {text-decoration:underline}
 	span.dup-pro-text {font-style:italic; font-size:12px; color:#555; font-style:italic }
+	div#dup-exportdb-items-checked, div#dup-exportdb-items-off {min-height:275px; display:none}
+	div#dup-exportdb-items-checked {padding: 5px; max-width:650px}
 
     /*INSTALLER SECTION*/
     div.dup-installer-header-1 {font-weight:bold; padding-bottom:2px; width:100%}
     div.dup-installer-header-2 {font-weight:bold; border-bottom:1px solid #dfdfdf; padding-bottom:2px; width:100%}
     label.chk-labels {display:inline-block; margin-top:1px}
-    table.dup-installer-tbl {width:95%; margin-left:20px}
+    table.dup-installer-tbl {width:97%; margin-left:20px}
+	div.dup-installer-panel-optional {text-align: center; font-style: italic; font-size: 12px; color:maroon}
 	
 	/*TABS*/
 	ul.add-menu-item-tabs li, ul.category-tabs li {padding:3px 30px 5px}
@@ -46,7 +48,7 @@
 <div>
 	<label for="package-name"><b><?php _e('Name', 'duplicator') ?>:</b> </label>
 		<div class="dup-notes-add">
-		<button class="button button-small" type="button" onclick="jQuery('#dup-notes-area').toggle()"><i class="fa fa-pencil-square-o"></i> <?php _e('Notes', 'duplicator') ?></button>
+		<button class="button button-small" type="button" onclick="jQuery('#dup-notes-area').toggle()" title="<?php _e('Notes', 'duplicator') ?>"><i class="fa fa-pencil-square-o"></i> </button>
 	</div>
 	<a href="javascript:void(0)" onclick="Duplicator.Pack.ResetName()" title="<?php _e('Create a new default name', 'duplicator') ?>"><i class="fa fa-undo"></i></a> <br/>
 	<input id="package-name"  name="package-name" type="text" value="<?php echo $Package->Name ?>" maxlength="40"  data-required="true" data-regexp="^[0-9A-Za-z|_]+$" /> <br/>
@@ -88,7 +90,7 @@ STORAGE -->
 							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/google_drive_64px.png" /> 
 							<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/ftp-64.png" /> 
 							<?php echo sprintf(__('%1$s, %2$s, %3$s, %4$s and other storage options available in', 'duplicator'), 'Amazon', 'Dropbox', 'Google Drive', 'FTP'); ?>
-							<a href="http://snapcreek.com/duplicator/?free-storage" target="_blank"><?php _e('Professional', 'duplicator');?></a> 
+							<a href="https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wordpress_plugin&utm_content=free_storage&utm_campaign=duplicator_pro" target="_blank"><?php _e('Professional', 'duplicator');?></a> 
 							<i class="fa fa-lightbulb-o" 
 								data-tooltip-title="<?php _e("Additional Storage:", 'duplicator'); ?>" 
 								data-tooltip="<?php _e('Professional allows you to create a package and then store it at a custom location on this server or to a cloud '
@@ -117,7 +119,7 @@ ARCHIVE -->
     </div>		
     <div class="dup-box-panel" id="dup-pack-archive-panel" style="<?php echo $ui_css_archive ?>">
         <input type="hidden" name="archive-format" value="ZIP" />
-		
+
         <!-- NESTED TABS -->
         <div data-dup-tabs='true'>
             <ul>
@@ -130,72 +132,98 @@ ARCHIVE -->
                 <!-- FILTERS -->
                 <?php
 					$uploads = wp_upload_dir();
-					$upload_dir = DUP_Util::SafePath($uploads['basedir']);
+					$upload_dir = DUP_Util::safePath($uploads['basedir']);
                 ?>
-                <div class="dup-enable-filters">
+           
+				<input type="checkbox"  id="export-onlydb" name="export-onlydb"  onclick="Duplicator.Pack.ExportOnlyDB()" <?php echo ($Package->Archive->ExportOnlyDB) ? "checked='checked'" :""; ?> />
+				<label for="export-onlydb"><?php _e('Archive Only the Database', 'duplicator') ?></label>
+
+				<div id="dup-exportdb-items-off" style="<?php echo ($Package->Archive->ExportOnlyDB) ? 'none' : 'block'; ?>">
                     <input type="checkbox" id="filter-on" name="filter-on" onclick="Duplicator.Pack.ToggleFileFilters()" <?php echo ($Package->Archive->FilterOn) ? "checked='checked'" :""; ?> />	
-                    <label for="filter-on"><?php _e("Enable File Filters", 'duplicator') ?></label>
+                    <label for="filter-on" id="filter-on-label"><?php _e("Enable File Filters", 'duplicator') ?></label>
 					<i class="fa fa-question-circle" 
 					   data-tooltip-title="<?php _e("File Filters:", 'duplicator'); ?>" 
 					   data-tooltip="<?php _e('File filters allow you to ignore directories and file extensions.  When creating a package only include the data you '
 					   . 'want and need.  This helps to improve the overall archive build time and keep your backups simple and clean.', 'duplicator'); ?>">
 					</i>
-                </div>
 
-                <div id="dup-file-filter-items">
-                    <label for="filter-dirs" title="<?php _e("Separate all filters by semicolon", 'duplicator'); ?>"><?php _e("Directories", 'duplicator') ?>:</label>
-                    <div class='dup-quick-links'>
-                        <a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludePath('<?php echo rtrim(DUPLICATOR_WPROOTPATH, '/'); ?>')">[<?php _e("root path", 'duplicator') ?>]</a>
-                        <a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludePath('<?php echo rtrim($upload_dir, '/'); ?>')">[<?php _e("wp-uploads", 'duplicator') ?>]</a>
-                        <a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludePath('<?php echo DUP_Util::SafePath(WP_CONTENT_DIR); ?>/cache')">[<?php _e("cache", 'duplicator') ?>]</a>
-                        <a href="javascript:void(0)" onclick="jQuery('#filter-dirs').val('')"><?php _e("(clear)", 'duplicator') ?></a>
-                    </div>
-                    <textarea name="filter-dirs" id="filter-dirs" placeholder="/full_path/exclude_path1;/full_path/exclude_path2;"><?php echo str_replace(";", ";\n", esc_textarea($Package->Archive->FilterDirs)) ?></textarea><br/>
-                    <label class="no-select" title="<?php _e("Separate all filters by semicolon", 'duplicator'); ?>"><?php _e("File extensions", 'duplicator') ?>:</label>
-                    <div class='dup-quick-links'>
-                        <a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludeExts('avi;mov;mp4;mpeg;mpg;swf;wmv;aac;m3u;mp3;mpa;wav;wma')">[<?php _e("media", 'duplicator') ?>]</a>
-                        <a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludeExts('zip;rar;tar;gz;bz2;7z')">[<?php _e("archive", 'duplicator') ?>]</a>
-                        <a href="javascript:void(0)" onclick="jQuery('#filter-exts').val('')"><?php _e("(clear)", 'duplicator') ?></a>
-                    </div>
-                    <textarea name="filter-exts" id="filter-exts" placeholder="ext1;ext2;ext3;"><?php echo esc_textarea($Package->Archive->FilterExts); ?></textarea>
+					<div id="dup-file-filter-items">
+						<label for="filter-dirs" title="<?php _e("Separate all filters by semicolon", 'duplicator'); ?>"><?php _e("Directories", 'duplicator') ?>:</label>
+						<div class='dup-quick-links'>
+							<a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludePath('<?php echo rtrim(DUPLICATOR_WPROOTPATH, '/'); ?>')">[<?php _e("root path", 'duplicator') ?>]</a>
+							<a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludePath('<?php echo rtrim($upload_dir, '/'); ?>')">[<?php _e("wp-uploads", 'duplicator') ?>]</a>
+							<a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludePath('<?php echo DUP_Util::safePath(WP_CONTENT_DIR); ?>/cache')">[<?php _e("cache", 'duplicator') ?>]</a>
+							<a href="javascript:void(0)" onclick="jQuery('#filter-dirs').val('')"><?php _e("(clear)", 'duplicator') ?></a>
+						</div>
+						<textarea name="filter-dirs" id="filter-dirs" placeholder="/full_path/exclude_path1;/full_path/exclude_path2;"><?php echo str_replace(";", ";\n", esc_textarea($Package->Archive->FilterDirs)) ?></textarea><br/>
+						<label class="no-select" title="<?php _e("Separate all filters by semicolon", 'duplicator'); ?>"><?php _e("File extensions", 'duplicator') ?>:</label>
+						<div class='dup-quick-links'>
+							<a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludeExts('avi;mov;mp4;mpeg;mpg;swf;wmv;aac;m3u;mp3;mpa;wav;wma')">[<?php _e("media", 'duplicator') ?>]</a>
+							<a href="javascript:void(0)" onclick="Duplicator.Pack.AddExcludeExts('zip;rar;tar;gz;bz2;7z')">[<?php _e("archive", 'duplicator') ?>]</a>
+							<a href="javascript:void(0)" onclick="jQuery('#filter-exts').val('')"><?php _e("(clear)", 'duplicator') ?></a>
+						</div>
+						<textarea name="filter-exts" id="filter-exts" placeholder="ext1;ext2;ext3;"><?php echo esc_textarea($Package->Archive->FilterExts); ?></textarea>
 
-                    <div class="dup-tabs-opts-help">
-                        <?php _e("The directory paths and extensions above will be be excluded from the archive file if enabled is checked.", 'duplicator'); ?> <br/>
-                        <?php _e("Use the full path for directories and semicolons to separate all items.", 'duplicator'); ?>
-                    </div>
-					<br/>
-					<span class="dup-pro-text">
-						<?php echo sprintf(__('%1$s are available in', 'duplicator'), 'Individual file filters'); ?>
-						<a href="http://snapcreek.com/duplicator/?free-file-filters" target="_blank"><?php _e('Professional', 'duplicator');?></a>
-						<i class="fa fa-lightbulb-o" 
-							data-tooltip-title="<?php _e("File Filters:", 'duplicator'); ?>" 
-							data-tooltip="<?php _e('File filters allows you to select individual files and add them to an exclusion list that will filter them from the package.', 'duplicator'); ?>">
-						 </i>
-					</span>
-                </div>
+						<div class="dup-tabs-opts-help">
+							<?php _e("The directory paths and extensions above will be be excluded from the archive file if enabled is checked.", 'duplicator'); ?> <br/>
+							<?php _e("Use the full path for directories and semicolons to separate all items.", 'duplicator'); ?>
+						</div>
+						<br/>
+						<span class="dup-pro-text">
+							<?php echo sprintf(__('%1$s are available in', 'duplicator'), 'Individual file filters'); ?>
+							<a href="https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wordpress_plugin&utm_content=free_file_filters&utm_campaign=duplicator_pro" target="_blank"><?php _e('Professional', 'duplicator');?></a>
+							<i class="fa fa-lightbulb-o"
+								data-tooltip-title="<?php _e("File Filters:", 'duplicator'); ?>"
+								data-tooltip="<?php _e('File filters allows you to select individual files and add them to an exclusion list that will filter them from the package.', 'duplicator'); ?>">
+							 </i>
+						</span>
+					</div>
+				</div>
+
+				<div id="dup-exportdb-items-checked"  style="<?php echo ($Package->Archive->ExportOnlyDB) ? 'block' : 'none'; ?>">
+					<?php 
+						_e("<b>Overview:</b><br/> This advanced option excludes all files from the archive.  Only the database and a copy of the installer.php "
+						. "will be included in the archive.zip file. The option can be used for backing up and moving only the database. <i>Please note that this option is currently in *Beta*.</i>", 'duplicator');
+						
+						echo '<br/><br/>';
+
+						_e("<b><i class='fa fa-exclamation-circle'></i> Notice:</b><br/>  Installing only the database over an existing site may have unintended consequences.  "
+						 . "Be sure to know the state of your system before installing the database without the associated files. ", 'duplicator');
+
+						echo '<br/><br/>';
+
+						_e("For example, if you have WordPress 4.6 on this site and you copy this sites database to a host that has WordPress 4.8 files then the source code of the files "
+							. " will not be in sync with the database causing possible errors.", 'duplicator');
+						
+						echo '<br/><br/>';
+						
+						_e("This can also be true of plugins and themes.   When moving only the database be sure to know the database will be compatible with ALL source code files."
+						. "  Please use this advanced feature with caution!", 'duplicator');
+					?>
+					<br/><br/>
+				</div>
+
             </div>
 
             <!-- TAB2: DATABASE -->
-            <div>
-                <div class="dup-enable-filters">						
-                    <table>
-						<tr>
-							<td colspan="2" style="padding:0 0 10px 0">
-								<?php _e("Build Mode", 'duplicator') ?>:&nbsp; <a href="?page=duplicator-settings" target="settings"><?php echo $dbbuild_mode; ?></a>
-							</td>
-						</tr>
-                        <tr>
-                            <td><input type="checkbox" id="dbfilter-on" name="dbfilter-on" onclick="Duplicator.Pack.ToggleDBFilters()" <?php echo ($Package->Database->FilterOn) ? "checked='checked'" :""; ?> /></td>
-                            <td>
-								<label for="dbfilter-on"><?php _e("Enable Table Filters", 'duplicator') ?> &nbsp;</label> 
-								<i class="fa fa-question-circle" 
-								   data-tooltip-title="<?php _e("Enable Table Filters:", 'duplicator'); ?>" 
-								   data-tooltip="<?php _e('Checked tables will not be added to the database script.  Excluding certain tables can possibly cause your site or plugins to not work correctly after install!', 'duplicator'); ?>">
-								</i>
-							</td>
-                        </tr>
-                    </table>
-                </div>
+            <div>					
+				<table>
+					<tr>
+						<td colspan="2" style="padding:0 0 10px 0">
+							<?php _e("Build Mode", 'duplicator') ?>:&nbsp; <a href="?page=duplicator-settings" target="settings"><?php echo $dbbuild_mode; ?></a>
+						</td>
+					</tr>
+					<tr>
+						<td><input type="checkbox" id="dbfilter-on" name="dbfilter-on" onclick="Duplicator.Pack.ToggleDBFilters()" <?php echo ($Package->Database->FilterOn) ? "checked='checked'" :""; ?> /></td>
+						<td>
+							<label for="dbfilter-on"><?php _e("Enable Table Filters", 'duplicator') ?> &nbsp;</label>
+							<i class="fa fa-question-circle"
+							   data-tooltip-title="<?php _e("Enable Table Filters:", 'duplicator'); ?>"
+							   data-tooltip="<?php _e('Checked tables will not be added to the database script.  Excluding certain tables can possibly cause your site or plugins to not work correctly after install!', 'duplicator'); ?>">
+							</i>
+						</td>
+					</tr>
+				</table>
                 <div id="dup-db-filter-items">
                     <a href="javascript:void(0)" id="dball" onclick="jQuery('#dup-dbtables .checkbox').prop('checked', true).trigger('click');">[ <?php _e('Include All', 'duplicator'); ?> ]</a> &nbsp; 
                     <a href="javascript:void(0)" id="dbnone" onclick="jQuery('#dup-dbtables .checkbox').prop('checked', false).trigger('click');">[ <?php _e('Exclude All', 'duplicator'); ?> ]</a>
@@ -288,30 +316,39 @@ INSTALLER -->
         <i class="fa fa-bolt"></i> <?php _e('Installer', 'duplicator') ?>
         <div class="dup-box-arrow"></div>
     </div>			
-
+	
     <div class="dup-box-panel" id="dup-pack-installer-panel" style="<?php echo $ui_css_installer ?>">
-        <div class="dup-installer-header-1"><i class="fa fa-caret-square-o-right"></i> <?php echo _e('STEP 1 - INPUTS', 'duplicator'); ?></div><br/>
+		
+		<div class="dup-installer-panel-optional">
+			<b><?php _e('All values in this section are', 'duplicator'); ?> <u><?php _e('optional', 'duplicator'); ?></u>.</b> <br/>
+			<?php _e("The installer can have these fields pre-filled at install time.", 'duplicator'); ?>
+            <i class="fa fa-question-circle"
+					data-tooltip-title="<?php _e("MySQL Server Prefills", 'duplicator'); ?>"
+					data-tooltip="<?php _e('The values in this section are NOT required! If you know ahead of time the database input fields the installer will use, then you can optionally enter them here.  Otherwise you can just enter them in at install time.', 'duplicator'); ?>">
+			</i>
+		</div>	
+	
         <table class="dup-installer-tbl">
             <tr>
-                <td colspan="2"><div class="dup-installer-header-2"><?php _e("MySQL Server", 'duplicator') ?></div></td>
+                <td colspan="2"><div class="dup-installer-header-2"><?php _e(" MySQL Server", 'duplicator') ?></div></td>
             </tr>
             <tr>
                 <td style="width:130px"><?php _e("Host", 'duplicator') ?></td>
-                <td><input type="text" name="dbhost" id="dbhost" value="<?php echo $Package->Installer->OptsDBHost ?>"  maxlength="200" placeholder="localhost"/></td>
+                <td><input type="text" name="dbhost" id="dbhost" value="<?php echo $Package->Installer->OptsDBHost ?>"  maxlength="200" placeholder="<?php _e('example: localhost (value is optional)', 'duplicator'); ?>"/></td>
             </tr>
 			<tr>
                 <td><?php _e("Host Port", 'duplicator') ?></td>
-                <td><input type="text" name="dbport" id="dbport" value="<?php echo $Package->Installer->OptsDBPort ?>"  maxlength="200" placeholder="3306"/></td>
+                <td><input type="text" name="dbport" id="dbport" value="<?php echo $Package->Installer->OptsDBPort ?>"  maxlength="200" placeholder="<?php _e('example: 3306 (value is optional)', 'duplicator'); ?>"/></td>
             </tr>
             <tr>
                 <td><?php _e("Database", 'duplicator') ?></td>
-                <td><input type="text" name="dbname" id="dbname" value="<?php echo $Package->Installer->OptsDBName ?>" maxlength="100" placeholder="mydatabaseName" /></td>
+                <td><input type="text" name="dbname" id="dbname" value="<?php echo $Package->Installer->OptsDBName ?>" maxlength="100" placeholder="<?php _e('example: DatabaseName (value is optional)', 'duplicator'); ?>" /></td>
             </tr>							
             <tr>
                 <td><?php _e("User", 'duplicator') ?></td>
-                <td><input type="text" name="dbuser" id="dbuser" value="<?php echo $Package->Installer->OptsDBUser ?>"  maxlength="100" placeholder="databaseUserName" /></td>
+                <td><input type="text" name="dbuser" id="dbuser" value="<?php echo $Package->Installer->OptsDBUser ?>"  maxlength="100" placeholder="<?php _e('example: DatabaseUserName (value is optional)', 'duplicator'); ?>" /></td>
             </tr>
-            <tr>
+            <!--tr>
                 <td colspan="2"><div class="dup-installer-header-2"><?php _e("Advanced Options", 'duplicator') ?></div></td>
             </tr>						
             <tr>
@@ -341,27 +378,27 @@ INSTALLER -->
                         </tr>
                     </table>
                 </td>
-            </tr>
+            </tr-->
         </table><br />
 
-        <div class="dup-installer-header-1"><i class="fa fa-caret-square-o-right"></i> <?php echo _e('STEP 2 - INPUTS', 'duplicator'); ?></div>
-        <table class="dup-installer-tbl">
+        
+
+         <input type="hidden" name="url-new" id="url-new" value=""/>
+
+         
+        <!--table class="dup-installer-tbl">
             <tr>
                 <td style="width:130px"><?php _e("New URL", 'duplicator') ?></td>
                 <td><input type="text" name="url-new" id="url-new" value="<?php echo $Package->Installer->OptsURLNew ?>" placeholder="http://mynewsite.com" /></td>
             </tr>
-        </table>
-		
-        <div class="dup-tabs-opts-help">
-			<?php _e("The installer can have these fields pre-filled at install time.", 'duplicator'); ?> <b><?php _e('All values are optional.', 'duplicator'); ?></b>
-        </div>	
+        </table-->
 		
 		<div style="padding:10px 0 0 12px;">
 			<span class="dup-pro-text">
 				<img src="<?php echo DUPLICATOR_PLUGIN_URL ?>assets/img/cpanel-48.png" style="width:16px; height:12px" />
-				<?php _e("Connect to a cPanel database with.", 'duplicator'); ?> 
-				<a href="http://snapcreek.com/duplicator/?free-file-filters" target="_blank"><?php _e('Professional', 'duplicator');?></a>
-				<i class="fa fa-lightbulb-o" 
+				<?php _e("Create the database and users directly at install time with ", 'duplicator'); ?>
+				<a href="https://snapcreek.com/duplicator/?utm_source=duplicator_free&utm_medium=wordpress_plugin&utm_content=free_cpanel&utm_campaign=duplicator_pro" target="_blank"><?php _e('Professional', 'duplicator');?></a>
+				<i class="fa fa-lightbulb-o"
 					data-tooltip-title="<?php _e("cPanel Access:", 'duplicator'); ?>" 
 					data-tooltip="<?php _e('If your server supports cPanel API access then you can create new databases and select existing ones with Duplicator Professional at install time.', 'duplicator'); ?>">
 				</i>
@@ -373,17 +410,35 @@ INSTALLER -->
 
 
 <div class="dup-button-footer">
-    <input type="button" value="<?php _e("Reset", 'duplicator') ?>" class="button button-large" <?php echo ($dup_tests['Success']) ? '' :'disabled="disabled"'; ?> onclick="Duplicator.Pack.ResetSettings()" />
-    <input type="submit" value="<?php _e("Next", 'duplicator') ?> &#9658;" class="button button-primary button-large" <?php echo ($dup_tests['Success']) ? '' :'disabled="disabled"'; ?> />
+    <input type="button" value="<?php _e("Reset", 'duplicator') ?>" class="button button-large" <?php echo ($dup_tests['Success']) ? '' :'disabled="disabled"'; ?> onclick="Duplicator.Pack.ConfirmReset()" />
+    <input type="submit" value="<?php _e("Next", 'duplicator') ?> &#9654;" class="button button-primary button-large" <?php echo ($dup_tests['Success']) ? '' :'disabled="disabled"'; ?> />
 </div>
 
 </form>
 
+<!-- ==========================================
+THICK-BOX DIALOGS: -->
+<?php	
+
+	$confirm1 = new DUP_UI_Dialog();
+	$confirm1->title			= __('Reset Package Settings?', 'duplicator');
+	$confirm1->message			= __('This will clear and reset all of the current package settings.  Would you like to continue?', 'duplicator');
+	$confirm1->jscallback		= 'Duplicator.Pack.ResetSettings()';
+	$confirm1->initConfirm();
+?>
 <script>
 jQuery(document).ready(function ($) 
 {
 	var DUP_NAMEDEFAULT = '<?php echo $default_name ?>';
 	var DUP_NAMELAST = $('#package-name').val();
+
+	Duplicator.Pack.ExportOnlyDB = function ()
+	{
+		$('#dup-exportdb-items-off, #dup-exportdb-items-checked').hide();
+		$("#export-onlydb").is(':checked')
+			? $('#dup-exportdb-items-checked').show()
+			: $('#dup-exportdb-items-off').show();
+	};
 
 	/* Enable/Disable the file filter elements */
 	Duplicator.Pack.ToggleFileFilters = function () 
@@ -430,13 +485,14 @@ jQuery(document).ready(function ($)
 		$("#filter-exts").val(text);
 	};
 	
+	Duplicator.Pack.ConfirmReset = function () 
+	{
+		 <?php $confirm1->showConfirm(); ?>
+	}
 
 	Duplicator.Pack.ResetSettings = function () 
 	{
 		var key = 'duplicator_package_active';
-		var result = confirm('<?php _e("This will reset all of the current package settings.  Would you like to continue?", "duplicator"); ?>');
-		if (!result)
-			return;
 
 		jQuery('#dup-form-opts-action').val(key);
 		jQuery('#dup-form-opts').attr('action', '?page=duplicator&tab=new1')
@@ -462,5 +518,6 @@ jQuery(document).ready(function ($)
 	//Init:Toggle OptionTabs
 	Duplicator.Pack.ToggleFileFilters();
 	Duplicator.Pack.ToggleDBFilters();
+	Duplicator.Pack.ExportOnlyDB();
 });
 </script>

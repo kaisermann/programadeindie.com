@@ -135,7 +135,7 @@ class Programadeindie
 	}
 
 	function action__admin_footer(){ echo '<script type="text/javascript">jQuery("#evento-adder, #lugar-adder").remove();</script>'; }
-	
+
 
 	function action__admin_footer_edit_tags()
 	{
@@ -237,7 +237,7 @@ class Programadeindie
 	{
 		global $post;
 
-		wp_enqueue_style( 'style', get_template_directory_uri().'/assets/css/main.min.css' , false, '1.1.2');
+		wp_enqueue_style( 'style', get_template_directory_uri().'/assets/css/main.min.css' , false, '1.1.3');
 
 		if( !is_admin())
 		{
@@ -246,14 +246,14 @@ class Programadeindie
 			wp_enqueue_script('jquery');
 		}
 
-		wp_enqueue_script( 'admin-set-js', get_template_directory_uri().'/assets/js/admin/admin.min.js', array(), '1.1.2', true );
+		wp_enqueue_script( 'admin-set-js', get_template_directory_uri().'/assets/js/admin/admin.min.js', array(), '1.1.3', true );
 
-		wp_enqueue_script( 'mainjs', get_template_directory_uri().'/assets/js/main.min.js', array(), '1.1.2', true );
+		wp_enqueue_script( 'mainjs', get_template_directory_uri().'/assets/js/main.min.js', array(), '1.1.3', true );
 
 		if($post->post_name=="lugares")
 		{
-			wp_enqueue_script( 'gmap', 'https://maps.googleapis.com/maps/api/js?v=3.exp&#038;sensor=false&#038;ver=4.0.1&#038;v=3', array(), '1.1.2', true );
-			wp_enqueue_script( 'lugares', get_template_directory_uri().'/assets/js/lugares/lugares.min.js', array(), '1.1.2', true );
+			wp_enqueue_script( 'gmap', 'https://maps.googleapis.com/maps/api/js?v=3.exp&#038;sensor=false&#038;ver=4.0.1&#038;v=3', array(), '1.1.3', true );
+			wp_enqueue_script( 'lugares', get_template_directory_uri().'/assets/js/lugares/lugares.min.js', array(), '1.1.3', true );
 		}
 
 	}
@@ -268,7 +268,7 @@ class Programadeindie
 		if(!self::$can_edit_photos)
 			wp_dequeue_script( 'admin-set-js');
 	}
-	
+
 	function action__wpseo_opengraph( $str )
 	{
 		global $post;
@@ -415,7 +415,7 @@ border: none !important
 			$where .= " AND post_password = ''";
 		return $where;
 	}
-	
+
 	function filter__wp_get_attachment_url($url)
 	{
 		if(is_admin())
@@ -465,7 +465,7 @@ border: none !important
 					add_image_size($name, $width, round($height), array('center', ($i<4 && $ii>1)?'top':'center'));
 			}
 		}
-		
+
 		add_image_size('avatar-64', 64, 64, ['center','center']);
 	}
 

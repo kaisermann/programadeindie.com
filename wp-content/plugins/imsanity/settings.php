@@ -6,9 +6,11 @@
  */
 
 // register the plugin settings menu
-add_action('admin_menu', 'imsanity_create_menu');
+add_action( 'admin_menu', 'imsanity_create_menu' );
 add_action( 'network_admin_menu', 'imsanity_register_network' );
-add_filter("plugin_action_links_imsanity/imsanity.php", 'imsanity_settings_link' );
+add_filter( 'plugin_action_links_imsanity/imsanity.php', 'imsanity_settings_link' );
+add_action( 'admin_enqueue_scripts', 'imsanity_queue_script' );
+add_action( 'admin_init', 'imsanity_register_settings' );
 
 // activation hooks
 // TODO: custom table is not removed because de-activating one site shouldn't affect the entire server
@@ -21,26 +23,54 @@ register_activation_hook('imsanity/imsanity.php', 'imsanity_maybe_created_custom
 $_imsanity_multisite_settings = null;
 
 /**
- * Settings link that appears on the plugins overview page
- * @param array $links
- * @return array
- */
-function imsanity_settings_link($links) {
-	$links[] = '<a href="'. get_admin_url(null, 'options-general.php?page='.__FILE__) .'">Settings</a>';
-	return $links;
-}
-
-/**
  * Create the settings menu item in the WordPress admin navigation and
  * link it to the plugin settings page
  */
 function imsanity_create_menu()
 {
 	// create new menu for site configuration
-	add_options_page(__('Imsanity Plugin Settings','imsanity'), 'Imsanity', 'administrator', __FILE__, 'imsanity_settings_page');
+	add_options_page( esc_html__( 'Imsanity Plugin Settings', 'imsanity' ), 'Imsanity', 'administrator', __FILE__, 'imsanity_settings_page' );
+}
 
-	// call register settings function
-	add_action( 'admin_init', 'imsanity_register_settings' );
+/**
+ * Register the network settings page
+ */
+function imsanity_register_network() {
+	if ( ! function_exists( 'is_plugin_active_for_network' ) && is_multisite() ) {
+		// need to include the plugin library for the is_plugin_active function
+		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+	}
+	if ( is_multisite() && is_plugin_active_for_network( 'imsanity/imsanity.php' ) ) {
+		add_submenu_page( 'settings.php', esc_html__( 'Imsanity Network Settings', 'imsanity' ), 'Imsanity', 'manage_options', 'imsanity_network', 'imsanity_network_settings' );
+	}
+}
+
+/**
+ * Settings link that appears on the plugins overview page
+ * @param array $links
+ * @return array
+ */
+function imsanity_settings_link( $links ) {
+	$links[] = '<a href="'. get_admin_url( null, 'options-general.php?page=' . __FILE__ ) . '">' . esc_html__( 'Settings', 'imsanity' ) . '</a>';
+	return $links;
+}
+
+function imsanity_queue_script( $hook ) {
+	// make sure we are being called from the settings page
+	if ( strpos( $hook, 'settings_page_imsanity' ) !== 0 ) {
+		return;
+	}
+	// register the scripts that are used by the bulk resizer
+	wp_enqueue_script( 'imsanity_script', plugins_url( '/scripts/imsanity.js', __FILE__ ), array( 'jquery' ), IMSANITY_VERSION );
+	wp_localize_script( 'imsanity_script', 'imsanity_vars', array(
+			'_wpnonce' => wp_create_nonce( 'imsanity-bulk' ),
+			'resizing_complete' => esc_html__( 'Resizing Complete', 'imsanity' ),
+			'resize_selected' => esc_html__( 'Resize Selected Images', 'imsanity' ),
+			'image' => esc_html__( 'Image', 'imsanity' ),
+			'invalid_response' => esc_html__( 'Received an invalid response, please check for errors in the Developer Tools console of your browser.', 'imsanity' ),
+			'none_found' => esc_html__( 'There are no images that need to be resized.', 'imsanity' ),
+		)
+	);
 }
 
 // TODO: legacy code to support previous MU version... ???
@@ -55,6 +85,7 @@ function imsanity_create_menu()
 // }
 // add_action( 'admin_menu', 'dm_add_pages' );
 
+// TODO: put network options where they belong, not in a custom table
 /**
  * Returns the name of the custom multi-site settings table.
  * this will be the same table regardless of the blog
@@ -88,7 +119,7 @@ function imsanity_multisite_table_schema_version()
 	if (!imsanity_multisite_table_exists()) return '0';
 
 	global $wpdb;
-	$version = $wpdb->get_var('select data from ' . imsanity_get_custom_table_name() . " where setting = 'schema'");
+	$version = $wpdb->get_var('SELECT data FROM ' . imsanity_get_custom_table_name() . " WHERE setting = 'schema'");
 
 	if (!$version) $version = '1.0'; // this is a legacy version 1.0 installation
 
@@ -180,14 +211,6 @@ function imsanity_maybe_created_custom_table()
 }
 
 /**
- * Register the network settings page
- */
-function imsanity_register_network()
-{
-	add_submenu_page('settings.php', __('Imsanity Network Settings','imsanity'), 'Imsanity', 'manage_options', 'imsanity_network', 'imsanity_network_settings');
-}
-
-/**
  * display the form for the multi-site settings page
  */
 function imsanity_network_settings()
@@ -196,94 +219,85 @@ function imsanity_network_settings()
 
 	echo '
 		<div class="wrap">
-		<div id="icon-options-general" class="icon32"><br></div>
-		<h2>'.__('Imsanity Network Settings','imsanity').'</h2>
+		<h1>' . esc_html__( 'Imsanity Network Settings' , 'imsanity' ) . '</h1>
 		';
 
 	// we only want to update if the form has been submitted
-	if (isset($_POST['update_settings']))
-	{
-		imsanity_network_settings_update();
-		echo "<div class='updated settings-error'><p><strong>".__("Imsanity network settings saved.",'imsanity')."</strong></p></div>";
-	}
+//	if (isset($_POST['update_settings']))
+//	{
+//		imsanity_network_settings_update();
+//		echo "<div id='imsanity-network-settings-saved' class='updated fade'><p><strong>". esc_html__( "Imsanity network settings saved.", 'imsanity' ) . "</strong></p></div>";
+//	}
 
-	imsanity_settings_banner();
+//	imsanity_settings_banner();
 
 	$settings = imsanity_get_multisite_settings();
-
+// TODO: insert labels for all settings
 	?>
 
 	<form method="post" action="settings.php?page=imsanity_network">
-	<input type="hidden" name="update_settings" value="1" />
-
+	<input type="hidden" name="update_imsanity_settings" value="1" />
+	<?php wp_nonce_field( "imsanity_network_options" ); ?>
 	<table class="form-table">
 	<tr valign="top">
-	<th scope="row"><?php _e("Global Settings Override",'imsanity'); ?></th>
+	<th scope="row"><?php esc_html_e( 'Global Settings Override', 'imsanity' ); ?></th>
 	<td>
 		<select name="imsanity_override_site">
-			<option value="0" <?php if ($settings->imsanity_override_site == '0') echo "selected='selected'" ?> ><?php _e("Allow each site to configure Imsanity settings",'imsanity'); ?></option>
-			<option value="1" <?php if ($settings->imsanity_override_site == '1') echo "selected='selected'" ?> ><?php _e("Use global Imsanity settings (below) for all sites",'imsanity'); ?></option>
+			<option value="0" <?php if ($settings->imsanity_override_site == '0') echo "selected='selected'" ?> ><?php esc_html_e("Allow each site to configure Imsanity settings",'imsanity'); ?></option>
+			<option value="1" <?php if ($settings->imsanity_override_site == '1') echo "selected='selected'" ?> ><?php esc_html_e("Use global Imsanity settings (below) for all sites",'imsanity'); ?></option>
 		</select>
 	</td>
 	</tr>
 
 	<tr valign="top">
-	<th scope="row"><?php _e("Images uploaded within a Page/Post",'imsanity');?></th>
+	<th><?php esc_html_e("Images uploaded within a Page/Post",'imsanity');?></th>
 	<td>
-		Fit within <input name="imsanity_max_width" value="<?php echo $settings->imsanity_max_width ?>" style="width: 50px;" />
-		x <input name="imsanity_max_height" value="<?php echo $settings->imsanity_max_height ?>" style="width: 50px;" /> pixels width/height <?php _e(" (or enter 0 to disable)",'imsanity'); ?>
+		<?php esc_html_e( 'Max Width', 'imsanity' ); ?> <input type="number" step="1" min="0" class='small-text' name="imsanity_max_width" value="<?php echo $settings->imsanity_max_width ?>" />
+		<?php esc_html_e( 'Max Height', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_height" value="<?php echo $settings->imsanity_max_height ?>" /> <?php esc_html_e( 'in pixels, enter 0 to disable','imsanity'); ?>
 	</td>
 	</tr>
 
 	<tr valign="top">
-	<th scope="row"><?php _e("Images uploaded directly to the Media Library",'imsanity'); ?></th>
+	<th><?php esc_html_e("Images uploaded directly to the Media Library",'imsanity'); ?></th>
 	<td>
-		Fit within <input name="imsanity_max_width_library" value="<?php echo $settings->imsanity_max_width_library ?>" style="width: 50px;" />
-		x <input name="imsanity_max_height_library" value="<?php echo $settings->imsanity_max_height_library ?>" style="width: 50px;" /> pixels width/height <?php _e(" (or enter 0 to disable)",'imsanity'); ?>
+		<?php esc_html_e( 'Max Width', 'imsanity' ); ?> <input type="number" step="1" min="0" class='small-text' name="imsanity_max_width_library" value="<?php echo $settings->imsanity_max_width_library ?>" />
+		<?php esc_html_e( 'Max Height', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_height_library" value="<?php echo $settings->imsanity_max_height_library ?>" /> <?php esc_html_e( 'in pixels, enter 0 to disable','imsanity'); ?>
 	</td>
 	</tr>
 
 	<tr valign="top">
-	<th scope="row"><?php _e("Images uploaded elsewhere (Theme headers, backgrounds, logos, etc)",'imsanity'); ?></th>
+	<th scope="row"><?php esc_html_e("Images uploaded elsewhere (Theme headers, backgrounds, logos, etc)",'imsanity'); ?></th>
 	<td>
-		Fit within <input name="imsanity_max_width_other" value="<?php echo $settings->imsanity_max_width_other ?>" style="width: 50px;" />
-		x <input name="imsanity_max_height_other" value="<?php echo $settings->imsanity_max_height_other ?>" style="width: 50px;" /> pixels width/height <?php _e(" (or enter 0 to disable)",'imsanity'); ?>
+		<?php esc_html_e( 'Max Width', 'imsanity' ); ?> <input type="number" step="1" min="0" class='small-text' name="imsanity_max_width_other" value="<?php echo $settings->imsanity_max_width_other ?>" />
+		<?php esc_html_e( 'Max Height', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_height_other" value="<?php echo $settings->imsanity_max_height_other ?>" /> <?php esc_html_e( 'in pixels, enter 0 to disable','imsanity'); ?>
 	</td>
 	</tr>
 
 	<tr valign="top">
-	<th scope="row"><?php _e("Convert BMP to JPG",'imsanity'); ?></th>
+	<th scope="row"><?php esc_html_e("Convert BMP to JPG",'imsanity'); ?></th>
 	<td><select name="imsanity_bmp_to_jpg">
-		<option value="1" <?php if ($settings->imsanity_bmp_to_jpg == '1') echo "selected='selected'" ?> ><?php _e("Yes",'imsanity'); ?></option>
-		<option value="0" <?php if ($settings->imsanity_bmp_to_jpg == '0') echo "selected='selected'" ?> ><?php _e("No",'imsanity'); ?></option>
+		<option value="1" <?php if ($settings->imsanity_bmp_to_jpg == '1') echo "selected='selected'" ?> ><?php esc_html_e("Yes",'imsanity'); ?></option>
+		<option value="0" <?php if ($settings->imsanity_bmp_to_jpg == '0') echo "selected='selected'" ?> ><?php esc_html_e("No",'imsanity'); ?></option>
 	</select></td>
 	</tr>
 
 	<tr valign="top">
-	<th scope="row"><?php _e("Convert PNG to JPG",'imsanity'); ?></th>
+	<th scope="row"><?php esc_html_e("Convert PNG to JPG",'imsanity'); ?></th>
 	<td><select name="imsanity_png_to_jpg">
-		<option value="1" <?php if ($settings->imsanity_png_to_jpg == '1') echo "selected='selected'" ?> ><?php _e("Yes",'imsanity'); ?></option>
-		<option value="0" <?php if ($settings->imsanity_png_to_jpg == '0') echo "selected='selected'" ?> ><?php _e("No",'imsanity'); ?></option>
+		<option value="1" <?php if ($settings->imsanity_png_to_jpg == '1') echo "selected='selected'" ?> ><?php esc_html_e("Yes",'imsanity'); ?></option>
+		<option value="0" <?php if ($settings->imsanity_png_to_jpg == '0') echo "selected='selected'" ?> ><?php esc_html_e("No",'imsanity'); ?></option>
 	</select></td>
 	</tr>
 
-	<tr valign="top">
-	<th scope="row"><?php _e("JPG Quality",'imsanity'); ?></th>
-		<td><select name="imsanity_quality">
-			<?php
-			$q = $settings->imsanity_quality;
-
-			for ($x = 10; $x <= 100; $x = $x + 10)
-			{
-				echo "<option". ($q == $x ? " selected='selected'" : "") .">$x</option>";
-			}
-			?>
-		</select><?php _e(" (WordPress default is 90)",'imsanity'); ?></td>
+	<tr>
+	<th><label for='imsanity_quality' ><?php esc_html_e( "JPG image quality", 'imsanity' ); ?></th>
+	<td><input type='text' id='imsanity_quality' name='imsanity_quality' class='small-text' value='<?php echo (int) $settings->imsanity_quality; ?>' /> <?php esc_html_e( 'Valid values are 1-100.', 'imsanity' ); ?>
+	<p class='description'><?php esc_html_e( 'WordPress default is 82', 'imsanity' ); ?></p></td>
 	</tr>
 
 	</table>
 
-	<p class="submit"><input type="submit" class="button-primary" value="<?php _e("Update Settings",'imsanity'); ?>" /></p>
+	<p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e( 'Update Settings', 'imsanity' ); ?>" /></p>
 
 	</form>
 	<?php
@@ -295,8 +309,10 @@ function imsanity_network_settings()
  * Process the form, update the network settings
  * and clear the cached settings
  */
-function imsanity_network_settings_update()
-{
+function imsanity_network_settings_update() {
+	if ( ! current_user_can( 'manage_options' ) || ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'imsanity_network_options' ) ) {
+		return;
+	}
 	global $wpdb;
 	global $_imsanity_multisite_settings;
 
@@ -317,8 +333,7 @@ function imsanity_network_settings_update()
 	$data->imsanity_max_width_other = sanitize_text_field($_POST['imsanity_max_width_other']);
 	$data->imsanity_bmp_to_jpg = $_POST['imsanity_bmp_to_jpg'] == 1;
 	$data->imsanity_png_to_jpg = $_POST['imsanity_png_to_jpg'] == 1;
-	$data->imsanity_quality = sanitize_text_field($_POST['imsanity_quality']);
-
+	$data->imsanity_quality = imsanity_jpg_quality($_POST['imsanity_quality']);
 	$wpdb->update(
 		$table_name,
 		array('data' =>  maybe_serialize($data)),
@@ -327,6 +342,12 @@ function imsanity_network_settings_update()
 
 	// clear the cache
 	$_imsanity_multisite_settings = null;
+	add_action( 'network_admin_notices', 'imsanity_network_settings_saved' );
+}
+
+function imsanity_network_settings_saved() {
+	// TODO: figure out why this won't fade
+	echo "<div id='imsanity-network-settings-saved' class='updated fade'><p><strong>" . esc_html__( "Imsanity network settings saved.", 'imsanity' ) . "</strong></p></div>";
 }
 
 /**
@@ -398,8 +419,14 @@ function imsanity_get_option($key,$ifnull)
 /**
  * Register the configuration settings that the plugin will use
  */
-function imsanity_register_settings()
-{
+function imsanity_register_settings() {
+	if ( ! function_exists( 'is_plugin_active_for_network' ) && is_multisite() ) {
+		require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+	}
+	// we only want to update if the form has been submitted
+	if ( isset( $_POST['update_imsanity_settings'] ) && is_multisite() && is_plugin_active_for_network( 'imsanity/imsanity.php' ) ) {
+		imsanity_network_settings_update();
+	}
 	//register our settings
 	register_setting( 'imsanity-settings-group', 'imsanity_max_height' );
 	register_setting( 'imsanity-settings-group', 'imsanity_max_width' );
@@ -409,7 +436,21 @@ function imsanity_register_settings()
 	register_setting( 'imsanity-settings-group', 'imsanity_max_width_other' );
 	register_setting( 'imsanity-settings-group', 'imsanity_bmp_to_jpg' );
 	register_setting( 'imsanity-settings-group', 'imsanity_png_to_jpg' );
-	register_setting( 'imsanity-settings-group', 'imsanity_quality' );
+	register_setting( 'imsanity-settings-group', 'imsanity_quality', 'imsanity_jpg_quality' );
+}
+
+/**
+ * Validate and return the JPG quality setting
+ */
+function imsanity_jpg_quality( $quality = null ) {
+	if ( $quality === null ) {
+		$quality = get_option( 'imsanity_quality' );
+	}
+	if ( preg_match( '/^(100|[1-9][0-9]?)$/', $quality ) ) {
+		return (int) $quality;
+	} else {
+		return IMSANITY_DEFAULT_QUALITY;
+	}
 }
 
 /**
@@ -420,30 +461,15 @@ function imsanity_settings_css()
 {
 	echo "
 	<style>
-	#imsanity_header
-	{
+	#imsanity_header {
 		border: solid 1px #c6c6c6;
-		margin: 12px 2px 8px 2px;
-		padding: 20px;
+		margin: 10px 0px;
+		padding: 0px 10px;
 		background-color: #e1e1e1;
 	}
-		#imsanity_header h4
-		{
-		margin: 0px 0px 0px 0px;
-		}
-		#imsanity_header tr
-		{
-		vertical-align: top;
-		}
-
-		.imsanity_section_header
-		{
-		border: solid 1px #c6c6c6;
-		margin: 12px 2px 8px 2px;
-		padding: 20px;
-		background-color: #e1e1e1;
-		}
-
+	#imsanity_header p {
+		margin: .5em 0;
+	}
 	</style>";
 }
 
@@ -453,17 +479,14 @@ function imsanity_settings_css()
  */
 function imsanity_settings_banner()
 {
-	// register the scripts that are used by the bulk resizer
-	wp_register_script( 'my_plugin_script', plugins_url('/imsanity/scripts/imsanity.js?v='.IMSANITY_VERSION), array('jquery'));
-	wp_enqueue_script( 'my_plugin_script' );
 	
-	echo '
-	<div id="imsanity_header" style="float: left;">';
+//	echo '
+//	<div id="imsanity_header" style="float: left;">';
 	
-	if (!defined('IMSANITY_HIDE_LOGO')) 
-		echo '<a href="http://verysimple.com/products/imsanity/"><img alt="Imsanity" src="' . plugins_url() . '/imsanity/images/imsanity.png" style="float: right; margin-left: 15px;"/></a>';
+//	if (!defined('IMSANITY_HIDE_LOGO')) 
+//		echo '<a href="http://verysimple.com/products/imsanity/"><img alt="Imsanity" src="' . plugins_url() . '/imsanity/images/imsanity.png" style="float: right; margin-left: 15px;"/></a>';
 	
-	echo '
+/*	echo '
 		<h4>'.__("Imsanity automatically resizes insanely huge image uploads",'imsanity').'</h4>'.
 
 		__("<p>Imsanity automaticaly reduces the size of images that are larger than the specified maximum and replaces the original
@@ -481,9 +504,9 @@ function imsanity_settings_banner()
 
 		<p>Be sure to save back-ups of your full-sized images if you wish to keep them.</p>",'imsanity') .
 
-		sprintf( __("<p>Imsanity Version %s by %s </p>",'imsanity'),IMSANITY_VERSION ,'<a href="http://verysimple.com/">Jason Hinkle</a>') .
+		sprintf( __("<p>Imsanity Version %s by %s </p>",'imsanity'),IMSANITY_VERSION ,'<a href="https://ewww.io/">Shane Bishop</a>') .
 	'</div>
-	<br style="clear:both" />';
+	<br style="clear:both" />';*/
 }
 
 /**
@@ -497,11 +520,10 @@ function imsanity_settings_page()
 
 	?>
 	<div class="wrap">
-	<div id="icon-options-general" class="icon32"><br></div>
-	<h2><?php _e("Imsanity Settings",'imsanity'); ?></h2>
+	<h1><?php esc_html_e( 'Imsanity Settings', 'imsanity' ); ?></h1>
 	<?php
 
-	imsanity_settings_banner();
+//	imsanity_settings_banner();
 
 	$settings = imsanity_get_multisite_settings();
 
@@ -519,26 +541,27 @@ function imsanity_settings_page()
 	<h2 style="margin-top: 0px;"><?php _e("Bulk Resize Images",'imsanity'); ?></h2>
 
 	<div id="imsanity_header">
-	<?php _e('<p>If you have existing images that were uploaded prior to installing Imsanity, you may resize them
-	all in bulk to recover disk space.  To begin, click the "Search Images" button to search all existing
-	attachments for images that are larger than the configured limit.</p>
-	<p>Limitations: For performance reasons a maximum of ' . IMSANITY_AJAX_MAX_RECORDS . ' images will be returned at one time.  Bitmap
-	image types are not supported and will not appear in the search results.</p>','imsanity'); ?>
+	<p><?php esc_html_e( 'If you have existing images that were uploaded prior to installing Imsanity, you may resize them all in bulk to recover disk space. To begin, click the "Search Images" button to search all existing attachments for images that are larger than the configured limit.', 'imsanity' ); ?></p>
+	<p><?php printf( esc_html__( 'NOTE: To give you greater control over the resizing process, a maximum of %d images will be returned at one time. Bitmap images cannot be bulk resized and will not appear in the search results.', 'imsanity' ), IMSANITY_AJAX_MAX_RECORDS ); ?></p>
 	</div>
 
-	<div style="border: solid 1px #ff6666; background-color: #ffbbbb; padding: 8px;">
-		<h4><?php _e('WARNING: BULK RESIZE WILL ALTER YOUR ORIGINAL IMAGES AND CANNOT BE UNDONE!','imsanity'); ?></h4>
+	<div style="border: solid 1px #ff6666; background-color: #ffbbbb; padding: 0 10px;">
+		<h4><?php esc_html_e( 'WARNING: Bulk Resize will alter your original images and cannot be undone!', 'imsanity' ); ?></h4>
 		
-		<p><?php _e('It is <strong>HIGHLY</strong> recommended that you backup 
-		your wp-content/uploads folder before proceeding.  You will have a chance to preview and select the images to convert.
-		It is also recommended that you initially select only 1 or 2 images and verify that everything is ok before
-		processing your entire library.  You have been warned!','imsanity'); ?></p>
+		<p><?php esc_html_e( 'It is HIGHLY recommended that you backup your wp-content/uploads folder before proceeding. You will have a chance to preview and select the images to convert.', 'imsanity' ); ?><br>
+		<?php esc_html_e( 'It is also recommended that you initially select only 1 or 2 images and verify that everything is working properly before processing your entire library.', 'imsanity' ); ?></p>
 	</div>
 
 	<p class="submit" id="imsanity-examine-button">
-		<button class="button-primary" onclick="imsanity_load_images('imsanity_image_list');"><?php _e('Search Images...','imsanity'); ?></button>
+		<button class="button-primary" onclick="imsanity_load_images('imsanity_image_list');"><?php esc_html_e( 'Search Images...', 'imsanity' ); ?></button>
 	</p>
-	<div id='imsanity_image_list'></div>
+	<div id='imsanity_image_list'>
+		<div id="imsanity_target" style="display: none; border: solid 2px #666666; padding: 10px; height: 0px; overflow: auto;">
+			<div id="imsanity_loading" style="display: none;"><img src="<?php echo plugins_url( 'images/ajax-loader.gif', __FILE__ ); ?>" style="margin-bottom: .25em; vertical-align:middle;" />
+				<?php esc_html_e( 'Scanning existing images. This may take a moment.', 'imsanity' ); ?>
+			</div>
+		</div>
+	</div>
 
 	<?php
 
@@ -553,7 +576,7 @@ function imsanity_settings_page_notice()
 {
 	?>
 	<div class="updated settings-error">
-	<p><strong><?php _e("Imsanity settings have been configured by the server administrator. There are no site-specific settings available.",'imsanity'); ?></strong></p>
+	<p><strong><?php esc_html_e("Imsanity settings have been configured by the server administrator. There are no site-specific settings available.",'imsanity'); ?></strong></p>
 	</div>
 
 	<?php
@@ -567,65 +590,59 @@ function imsanity_settings_page_form()
 {
 	?>
 	<form method="post" action="options.php">
-
 	<?php settings_fields( 'imsanity-settings-group' ); ?>
 		<table class="form-table">
 
 		<tr valign="middle">
 		<th scope="row"><?php _e("Images uploaded within a Page/Post",'imsanity'); ?></th>
-		<td>Fit within <input type="text" style="width: 50px;" name="imsanity_max_width" value="<?php echo get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
-		x <input type="text" style="width: 50px;" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> pixels width/height <?php _e(" (or enter 0 to disable)",'imsanity'); ?>
+		<td>
+			<?php esc_html_e( 'Max Width', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_width" value="<?php echo get_option('imsanity_max_width',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
+			<?php esc_html_e( 'Max Height', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_height" value="<?php echo get_option('imsanity_max_height',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> <?php esc_html_e( 'in pixels, enter 0 to disable','imsanity'); ?>
 		</td>
 		</tr>
 
 		<tr valign="middle">
 		<th scope="row"><?php _e("Images uploaded directly to the Media Library",'imsanity'); ?></th>
-		<td>Fit within <input type="text" style="width: 50px;" name="imsanity_max_width_library" value="<?php echo get_option('imsanity_max_width_library',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
-		x <input type="text" style="width: 50px;" name="imsanity_max_height_library" value="<?php echo get_option('imsanity_max_height_library',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> pixels width/height <?php _e(" (or enter 0 to disable)",'imsanity'); ?>
+		<td>
+			<?php esc_html_e( 'Max Width', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_width_library" value="<?php echo get_option('imsanity_max_width_library',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
+			<?php esc_html_e( 'Max Height', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_height_library" value="<?php echo get_option('imsanity_max_height_library',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> <?php esc_html_e( 'in pixels, enter 0 to disable','imsanity'); ?>
 		</td>
 		</tr>
 
 		<tr valign="middle">
 		<th scope="row"><?php _e("Images uploaded elsewhere (Theme headers, backgrounds, logos, etc)",'imsanity'); ?></th>
-		<td>Fit within <input type="text" style="width: 50px;" name="imsanity_max_width_other" value="<?php echo get_option('imsanity_max_width_other',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
-		x <input type="text" style="width: 50px;" name="imsanity_max_height_other" value="<?php echo get_option('imsanity_max_height_other',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> pixels width/height <?php _e(" (or enter 0 to disable)",'imsanity'); ?>
+		<td>
+			<?php esc_html_e( 'Max Width', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_width_other" value="<?php echo get_option('imsanity_max_width_other',IMSANITY_DEFAULT_MAX_WIDTH); ?>" />
+			<?php esc_html_e( 'Max Height', 'imsanity' ); ?> <input type="number" step="1" min="0" class="small-text" name="imsanity_max_height_other" value="<?php echo get_option('imsanity_max_height_other',IMSANITY_DEFAULT_MAX_HEIGHT); ?>" /> <?php esc_html_e( 'in pixels, enter 0 to disable','imsanity'); ?>
 		</td>
 		</tr>
 
 
-		<tr valign="middle">
-		<th scope="row"><?php _e("JPG image quality",'imsanity'); ?></th>
-		<td><select name="imsanity_quality">
-			<?php
-			$q = get_option('imsanity_quality',IMSANITY_DEFAULT_QUALITY);
-
-			for ($x = 10; $x <= 100; $x = $x + 10)
-			{
-				echo "<option". ($q == $x ? " selected='selected'" : "") .">$x</option>";
-			}
-			?>
-		</select><?php _e(" (WordPress default is 90)",'imsanity'); ?></td>
+		<tr>
+		<th><label for='imsanity_quality' ><?php esc_html_e( "JPG image quality", 'imsanity' ); ?></th>
+		<td><input type='text' id='imsanity_quality' name='imsanity_quality' class='small-text' value='<?php echo imsanity_jpg_quality(); ?>' /> <?php esc_html_e('Valid values are 1-100.', 'imsanity' ); ?>
+		<p class='description'><?php esc_html_e( 'WordPress default is 82','imsanity' ); ?></p></td>
 		</tr>
 
 		<tr valign="middle">
-		<th scope="row"><?php _e("Convert BMP To JPG",'imsanity'); ?></th>
+		<th scope="row"><?php esc_html_e("Convert BMP To JPG",'imsanity'); ?></th>
 		<td><select name="imsanity_bmp_to_jpg">
-			<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "1") {echo "selected='selected'";} ?> value="1"><?php _e("Yes",'imsanity'); ?></option>
-			<option <?php if (get_option('imsanity_bmp_to_jpg',IMSANITY_DEFAULT_BMP_TO_JPG) == "0") {echo "selected='selected'";} ?> value="0"><?php _e("No",'imsanity'); ?></option>
+			<option <?php if ( get_option( 'imsanity_bmp_to_jpg', IMSANITY_DEFAULT_BMP_TO_JPG) == "1" ) { echo "selected='selected'"; } ?> value="1"><?php esc_html_e("Yes",'imsanity'); ?></option>
+			<option <?php if ( get_option( 'imsanity_bmp_to_jpg', IMSANITY_DEFAULT_BMP_TO_JPG) == "0" ) { echo "selected='selected'"; } ?> value="0"><?php esc_html_e("No",'imsanity'); ?></option>
 		</select></td>
 		</tr>
 
 		<tr valign="middle">
-		<th scope="row"><?php _e("Convert PNG To JPG",'imsanity'); ?></th>
+		<th scope="row"><?php esc_html_e("Convert PNG To JPG",'imsanity'); ?></th>
 		<td><select name="imsanity_png_to_jpg">
-			<option <?php if (get_option('imsanity_png_to_jpg',IMSANITY_DEFAULT_PNG_TO_JPG) == "1") {echo "selected='selected'";} ?> value="1"><?php _e("Yes",'imsanity'); ?></option>
-			<option <?php if (get_option('imsanity_png_to_jpg',IMSANITY_DEFAULT_PNG_TO_JPG) == "0") {echo "selected='selected'";} ?> value="0"><?php _e("No",'imsanity'); ?></option>
+			<option <?php if (get_option('imsanity_png_to_jpg',IMSANITY_DEFAULT_PNG_TO_JPG) == "1") {echo "selected='selected'";} ?> value="1"><?php esc_html_e("Yes",'imsanity'); ?></option>
+			<option <?php if (get_option('imsanity_png_to_jpg',IMSANITY_DEFAULT_PNG_TO_JPG) == "0") {echo "selected='selected'";} ?> value="0"><?php esc_html_e("No",'imsanity'); ?></option>
 		</select></td>
 		</tr>
 
 	</table>
 
-	<p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
+	<p class="submit"><input type="submit" class="button-primary" value="<?php esc_attr_e('Save Changes') ?>" /></p>
 
 	</form>
 	<?php

@@ -146,7 +146,8 @@ class WPSEO_Export {
 
 		foreach ( $options as $key => $elem ) {
 			if ( is_array( $elem ) ) {
-				for ( $i = 0; $i < count( $elem ); $i ++ ) {
+				$count = count( $elem );
+				for ( $i = 0; $i < $count; $i ++ ) {
 					$this->write_setting( $key . '[]', $elem[ $i ] );
 				}
 			}
@@ -249,7 +250,9 @@ class WPSEO_Export {
 	 */
 	private function serve_settings_export() {
 		// Clean any content that has been already output. For example by other plugins or faulty PHP files.
-		ob_clean();
+		if ( ob_get_contents() ) {
+			ob_clean();
+		}
 		header( 'Content-Type: application/octet-stream; charset=utf-8' );
 		header( 'Content-Transfer-Encoding: Binary' );
 		header( 'Content-Disposition: attachment; filename=' . self::ZIP_FILENAME );

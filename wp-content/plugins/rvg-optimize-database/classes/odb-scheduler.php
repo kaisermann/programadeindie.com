@@ -29,6 +29,7 @@ class ODB_Scheduler
 	 *
 	 *	v4.0.1	Localization fixed
 	 *	v4.0.3	($schedules) added as a parameter
+	 *	v4.2.0	Added monthly
 	 *******************************************************************************/
 	function odb_extra_cron_schedules($schedules)
 	{
@@ -38,6 +39,10 @@ class ODB_Scheduler
 			'interval' => 604800,
 			'display'  => __('Once Weekly', $odb_class->odb_txt_domain)
 		);
+		$schedules['monthly'] = array(
+			'interval' => 2628000, // average amount of seconds in a month
+			'display'  => __('Once Monthly', $odb_class->odb_txt_domain)
+		);		
 		// FOR DEBUGGING
 		$schedules['fiveminutes'] = array(
 			'interval' => 300,
@@ -63,7 +68,9 @@ class ODB_Scheduler
 		else
 		{	// JOB SHOULD BE SCHEDULED: SCHEDULE IT
 			if($odb_class->odb_rvg_options['schedule_type'] != 'daily' &&
-				$odb_class->odb_rvg_options['schedule_type'] != 'weekly') 
+				$odb_class->odb_rvg_options['schedule_type'] != 'weekly' &&
+				$odb_class->odb_rvg_options['schedule_type'] != 'monthly'
+				) 
 			{
 				$odb_class->odb_rvg_options['schedule_hour'] = '';
 				$odb_class->odb_multisite_obj->odb_ms_update_option('odb_rvg_options', $odb_class->odb_rvg_options);
@@ -95,7 +102,9 @@ class ODB_Scheduler
 		global $odb_class;
 	
 		if ($odb_class->odb_rvg_options['schedule_type'] == 'daily' ||
-				$odb_class->odb_rvg_options['schedule_type'] == 'weekly')
+				$odb_class->odb_rvg_options['schedule_type'] == 'weekly' ||
+				$odb_class->odb_rvg_options['schedule_type'] == 'monthly'
+				)
 		{
 			// 'daily' OR 'weekly'
 			$current_datetime = Date('YmdHis');

@@ -3,8 +3,8 @@ Contributors: interconnectit, sanchothefat, spectacula, AndyWalmsley
 Donate link: https://myeyesareuphere.interconnectit.com/donate/
 Tags: thumbnails, image editing, image, featured image
 Requires at least: 3.8.1
-Tested up to: 4.4.2
-Stable tag: 1.1.8
+Tested up to: 4.8
+Stable tag: 1.1.9
 License: GPLv2
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -72,6 +72,9 @@ You can email us at cases@interconnectit.fogbugz.com with "My Eyes Are Up Here" 
 4. How the image appears once My Eyes Are Up Here has been installed and applied.
 
 == Changelog ==
+
+= 1.1.9 =
+* Fix the js error for WP Customizer
 
 = 1.1.8 =
 * Remove deprecated jQuery methods

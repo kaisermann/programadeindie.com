@@ -1,6 +1,6 @@
 {
   "name": "my-eyes-are-up-here",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "author": "interconnect/it <support@interconnectit.com>",
   "homepage": "https://interconnectit.com",
   "private": true,
@@ -18,7 +18,7 @@
     }
   ],
   "scripts": {
-    "postinstall": "bower install && grunt dist"
+    "postinstall": "bower install && grunt build"
   },
   "devDependencies": {
     "bower": "^1.7.1",
