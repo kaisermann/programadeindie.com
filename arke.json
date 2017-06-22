@@ -6,6 +6,7 @@
       "shared": [
         ["wp-config.php"],
         ["wp-content/uploads", "uploads"],
+        ["wp-content/cache", "cache"],
         [".well-known"]
       ]
     },
