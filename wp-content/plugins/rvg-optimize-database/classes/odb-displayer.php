@@ -78,6 +78,8 @@ class ODB_Displayer
 			$schedule = __('ONCE DAILY',$odb_class->odb_txt_domain);
 		else if($odb_class->odb_rvg_options['schedule_type'] == 'weekly')
 			$schedule = __('ONCE WEEKLY',$odb_class->odb_txt_domain);
+		else if($odb_class->odb_rvg_options['schedule_type'] == 'monthly')
+			$schedule = __('ONCE MONTHLY',$odb_class->odb_txt_domain);			
 		else $schedule = __('NOT SCHEDULED',$odb_class->odb_txt_domain);
 		
 		echo '

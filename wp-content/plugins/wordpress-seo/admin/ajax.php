@@ -106,18 +106,20 @@ function wpseo_kill_blocking_files() {
 		foreach ( $options['blocking_files'] as $file ) {
 			if ( is_file( $file ) ) {
 				if ( ! @unlink( $file ) ) {
-					$errors[] = __(
-						sprintf( 'The file "%s" could not be removed. Please remove it via FTP.', $file ),
-						'wordpress-seo'
+					$errors[] = sprintf(
+						/* translators: %s expands to the file path and name. */
+						__( 'The file %s could not be removed. Please remove it via FTP.', 'wordpress-seo' ),
+						'<code>' . $file . '</code>'
 					);
 				}
 			}
 
 			if ( is_dir( $file ) ) {
 				if ( ! @ rmdir( $file ) ) {
-					$errors[] = __(
-						sprintf( 'The directory "%s" could not be removed. Please remove it via FTP.', $file ),
-						'wordpress-seo'
+					$errors[] = sprintf(
+						/* translators: %s expands to the directory path and name. */
+						__( 'The directory %s could not be removed. Please remove it via FTP.', 'wordpress-seo' ),
+						'<code>' . $file . '</code>'
 					);
 				}
 			}
@@ -126,9 +128,12 @@ function wpseo_kill_blocking_files() {
 
 	if ( $errors ) {
 		$message = implode( '<br />', $errors );
+		wp_send_json_error( array( 'message' => $message ) );
 	}
-
-	die( $message );
+	else {
+		$message = __( 'Files successfully removed.', 'wordpress-seo' );
+		wp_send_json_success( array( 'message' => $message ) );
+	}
 }
 
 add_action( 'wp_ajax_wpseo_kill_blocking_files', 'wpseo_kill_blocking_files' );
@@ -359,9 +364,9 @@ add_action( 'wp_ajax_get_focus_keyword_usage',  'ajax_get_keyword_usage' );
 function ajax_get_term_keyword_usage() {
 	$post_id = filter_input( INPUT_POST, 'post_id' );
 	$keyword = filter_input( INPUT_POST, 'keyword' );
-	$taxonomyName = filter_input( INPUT_POST, 'taxonomy' );
+	$taxonomy_name = filter_input( INPUT_POST, 'taxonomy' );
 
-	$taxonomy = get_taxonomy( $taxonomyName );
+	$taxonomy = get_taxonomy( $taxonomy_name );
 
 	if ( ! $taxonomy ) {
 		wp_die( 0 );
@@ -371,7 +376,7 @@ function ajax_get_term_keyword_usage() {
 		wp_die( -1 );
 	}
 
-	$usage = WPSEO_Taxonomy_Meta::get_keyword_usage( $keyword, $post_id, $taxonomyName );
+	$usage = WPSEO_Taxonomy_Meta::get_keyword_usage( $keyword, $post_id, $taxonomy_name );
 
 	// Normalize the result so it it the same as the post keyword usage AJAX request.
 	$usage = $usage[ $keyword ];
@@ -387,13 +392,13 @@ add_action( 'wp_ajax_get_term_keyword_usage',  'ajax_get_term_keyword_usage' );
  * Removes stopword from the sample permalink that is generated in an AJAX request
  *
  * @param array  $permalink The permalink generated for this post by WordPress.
- * @param int    $post_ID The ID of the post.
- * @param string $title The title for the post that the user used.
- * @param string $name The name for the post that the user used.
+ * @param int    $post_id   The ID of the post.
+ * @param string $title     The title for the post that the user used.
+ * @param string $name      The name for the post that the user used.
  *
  * @return array
  */
-function wpseo_remove_stopwords_sample_permalink( $permalink, $post_ID, $title, $name ) {
+function wpseo_remove_stopwords_sample_permalink( $permalink, $post_id, $title, $name ) {
 	WPSEO_Options::get_instance();
 	$options = WPSEO_Options::get_options( array( 'wpseo_permalinks' ) );
 	if ( $options['cleanslugs'] !== true ) {
@@ -440,9 +445,10 @@ new Yoast_Dismissable_Notice_Ajax( 'recalculate', Yoast_Dismissable_Notice_Ajax:
  * Create an export and return the URL
  *
  * @deprecated 3.3.2
+ * @codeCoverageIgnore
  */
 function wpseo_get_export() {
-	_deprecated_function( __METHOD__, 'WPSEO 3.3.2', 'This method is deprecated.' );
+	_deprecated_function( __FUNCTION__, 'WPSEO 3.3.2', 'This method is deprecated.' );
 
 	wpseo_ajax_json_echo_die( '' );
 }

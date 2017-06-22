@@ -4,10 +4,9 @@
     "type": "simple-wordpress",
     "fileStructure": {
       "shared": [
-        ["robots.txt"],
-        [".htaccess"],
         ["wp-config.php"],
-        ["wp-content/uploads", "uploads"]
+        ["wp-content/uploads", "uploads"],
+        [".well-known"]
       ]
     },
     "cmds": {

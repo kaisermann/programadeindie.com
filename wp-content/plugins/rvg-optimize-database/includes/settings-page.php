@@ -60,7 +60,7 @@ if (isset($_POST['info_update']))
 		
 		if(sanitize_text_field($_POST['rvg_odb_schedule'] == '')
 			|| (sanitize_text_field($_POST['rvg_odb_schedule']) != 'daily'
-			&& sanitize_text_field($_POST['rvg_odb_schedule']) != 'weekly' ))
+			&& sanitize_text_field($_POST['rvg_odb_schedule']) != 'weekly' && sanitize_text_field($_POST['rvg_odb_schedule']) != 'monthly' ))
 			$_POST['rvg_odb_schedulehour'] = '';
 		
 		$hour = '';
@@ -131,7 +131,7 @@ function rvg_odb_keep_revisions_changed()
 	}
 }
 function schedule_changed()
-{	if(jQuery("#rvg_odb_schedule").val() == "daily" || jQuery("#rvg_odb_schedule").val() == "weekly")
+{	if(jQuery("#rvg_odb_schedule").val() == "daily" || jQuery("#rvg_odb_schedule").val() == "weekly" || jQuery("#rvg_odb_schedule").val() == "monthly")
 		jQuery("#schedulehour").show();
 	else
 		jQuery("#schedulehour").hide();
@@ -317,7 +317,10 @@ echo '
                   </option>
                   <option value="weekly">
                   '.__('run optimization WEEKLY',$this->odb_txt_domain).'
-                  </option>		  
+                  </option>
+                  <option value="monthly">
+                  '.__('run optimization MONTHLY',$this->odb_txt_domain).'
+                  </option>						  	  
                 </select>
                 <script type="text/javascript">
 					jQuery("#rvg_odb_schedule").val("'.$this->odb_rvg_options['schedule_type'].'");

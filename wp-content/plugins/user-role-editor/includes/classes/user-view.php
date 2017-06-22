@@ -69,7 +69,7 @@ class URE_User_View extends URE_View {
             $user_info .= ' (' . $this->user_to_edit->display_name . ')';
         }
         $user_info .= $anchor_end . '</span>';
-        if (is_multisite() && is_super_admin($this->user_to_edit->ID)) {
+        if (is_multisite() && $this->lib->is_super_admin($this->user_to_edit->ID)) {
             $user_info .= '  <span style="font-weight: bold; color:red;">' . esc_html__('Network Super Admin', 'user-role-editor') . '</span>';
         }
 
@@ -79,10 +79,10 @@ class URE_User_View extends URE_View {
         
         return $user_info;
     }
-    // end of build_user_info()
+    // end of get_user_info()
     
     
-    private function show_primary_role_dropdown_list($user_roles) {
+    public function show_primary_role_dropdown_list($user_roles) {
 ?>        
         <select name="primary_role" id="primary_role">
 <?php
@@ -103,7 +103,7 @@ class URE_User_View extends URE_View {
     // end of show_primary_role_dropdown_list()
     
     
-    private function show_secondary_roles() {
+    protected function show_secondary_roles() {
         $show_admin_role = $this->lib->show_admin_role_allowed();
         $values = array_values($this->user_to_edit->roles);
         $primary_role = array_shift($values);  // get 1st element from roles array
@@ -129,20 +129,21 @@ class URE_User_View extends URE_View {
         $show_deprecated_caps = $this->lib->get('show_deprecated_caps');
         $edit_user_caps_mode = $this->lib->get_edit_user_caps_mode();
         $caps_access_restrict_for_simple_admin = $this->lib->get_option('caps_access_restrict_for_simple_admin', 0);        
-        $user_info = $this->get_user_info();        
+        $user_info = $this->get_user_info();  
+        $select_primary_role = apply_filters('ure_users_select_primary_role', true);
 ?>
 
-<div class="has-sidebar-content">
-<?php
-        $this->display_box_start(esc_html__('Change capabilities for user', 'user-role-editor'). $user_info, 'min-width:1000px;');
- 
-?>
+<div class="postbox" style="float:left;min-width:1000px;width: 100%;">
+    <div id="ure_user_caps_header">
+        <span id="ure_user_caps_title"><?php esc_html_e('Change capabilities for user', 'user-role-editor')?></span> <?php echo $user_info;?>
+    </div>
+    <div class="inside"> 
 <table cellpadding="0" cellspacing="0" style="width: 100%;">
 	<tr>
 		<td>&nbsp;</td>		
 		<td style="padding-left: 10px; padding-bottom: 5px;">
   <?php    
-    if (is_super_admin() || !$this->multisite || !class_exists('User_Role_Editor_Pro') || !$caps_access_restrict_for_simple_admin) {  
+    if ($this->lib->is_super_admin() || !$this->multisite || !class_exists('User_Role_Editor_Pro') || !$caps_access_restrict_for_simple_admin) {  
         if ($caps_readable) {
             $checked = 'checked="checked"';
         } else {
@@ -168,14 +169,17 @@ class URE_User_View extends URE_View {
 		</td>
 	</tr>	
 	<tr>
-		<td class="ure-user-roles">
-			<div style="margin-bottom: 5px; font-weight: bold;"><?php esc_html_e('Primary Role:', 'user-role-editor'); ?></div>
+		<td id="ure_user_roles">
+<?php
+    if ($select_primary_role || $this->lib->is_super_admin()) {
+?>
+			<div class="ure-user-role-section-title"><?php esc_html_e('Primary Role:', 'user-role-editor'); ?></div>
 <?php 
-    $this->show_primary_role_dropdown_list($this->user_to_edit->roles);
-
+        $this->show_primary_role_dropdown_list($this->user_to_edit->roles);
+    }
     if (function_exists('bbp_filter_blog_editable_roles') ) {  // bbPress plugin is active
 ?>	
-	<div style="margin-top: 5px;margin-bottom: 5px; font-weight: bold;"><?php esc_html_e('bbPress Role:', 'user-role-editor'); ?></div>
+	<div class="ure-user-role-section-title" style="margin-top: 5px;"><?php esc_html_e('bbPress Role:', 'user-role-editor'); ?></div>
 <?php
         $dynamic_roles = bbp_get_dynamic_roles();
         $bbp_user_role = bbp_get_user_role($this->user_to_edit->ID);
@@ -195,12 +199,9 @@ class URE_User_View extends URE_View {
 	</tr>
 </table>
   <input type="hidden" name="object" value="user" />
-  <input type="hidden" name="user_id" value="<?php echo $this->user_to_edit->ID; ?>" />
-<?php
-  $this->display_box_end();
-?>
-  
-</div>        
+  <input type="hidden" name="user_id" value="<?php echo $this->user_to_edit->ID; ?>" /> 
+    </div>  
+</div>
 <?php
     }
     // end of display()

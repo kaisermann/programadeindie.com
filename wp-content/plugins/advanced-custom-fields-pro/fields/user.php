@@ -54,7 +54,36 @@ class acf_field_user extends acf_field {
 
 	
 	/*
-	*  get_choices
+	*  ajax_query
+	*
+	*  description
+	*
+	*  @type	function
+	*  @date	24/10/13
+	*  @since	5.0.0
+	*
+	*  @param	$post_id (int)
+	*  @return	$post_id (int)
+	*/
+	
+	function ajax_query() {
+		
+		// validate
+		if( !acf_verify_ajax() ) die();
+		
+		
+		// get choices
+		$response = $this->get_ajax_query( $_POST );
+		
+		
+		// return
+		acf_send_ajax_results($response);
+			
+	}
+	
+	
+	/*
+	*  get_ajax_query
 	*
 	*  This function will return an array of data formatted for use in a select2 AJAX response
 	*
@@ -66,20 +95,27 @@ class acf_field_user extends acf_field {
 	*  @return	(array)
 	*/
 	
-	function get_choices( $options = array() ) {
+	function get_ajax_query( $options = array() ) {
 		
-   		// defaults
+		// defaults
    		$options = acf_parse_args($options, array(
 			'post_id'		=> 0,
 			's'				=> '',
 			'field_key'		=> '',
-			'paged'			=> 1,
+			'paged'			=> 1
 		));
 		
-				
+		
+		// load field
+		$field = acf_get_field( $options['field_key'] );
+		if( !$field ) return false;
+		
+		
    		// vars
-   		$r = array();
+   		$results = array();
    		$args = array();
+   		$s = false;
+   		$is_search = false;
    		
 		
 		// paged
@@ -87,15 +123,21 @@ class acf_field_user extends acf_field {
    		$args['paged'] = $options['paged'];
    		
    		
-		// load field
-		$field = acf_get_field( $options['field_key'] );
+   		// search
+		if( $options['s'] !== '' ) {
+			
+			// strip slashes (search may be integer)
+			$s = wp_unslash( strval($options['s']) );
+			
+			
+			// update vars
+			$args['s'] = $s;
+			$is_search = true;
+			
+		}
 		
 		
-		// bail early if no field
-		if( !$field ) return false;
-		
-		
-		// update $args
+		// role
 		if( !empty($field['role']) ) {
 		
 			$args['role'] = acf_get_array( $field['role'] );
@@ -104,7 +146,7 @@ class acf_field_user extends acf_field {
 		
 		
 		// search
-		if( $options['s'] ) {
+		if( $is_search ) {
 			
 			// append to $args
 			$args['search'] = '*' . $options['s'] . '*';
@@ -130,100 +172,74 @@ class acf_field_user extends acf_field {
 		$groups = acf_get_grouped_users( $args );
 		
 		
-		// bail early if no groups
-		if( empty($groups) ) return false;
-		
-		
 		// loop
-		foreach( array_keys($groups) as $group_title ) {
+		if( !empty($groups) ) {
 			
-			// vars
-			$users = acf_extract_var( $groups, $group_title );
-			$data = array(
-				'text'		=> $group_title,
-				'children'	=> array()
-			);
-			
-			
-			// append users
-			foreach( array_keys($users) as $user_id ) {
+			foreach( array_keys($groups) as $group_title ) {
 				
-				$users[ $user_id ] = $this->get_result( $users[ $user_id ], $field, $options['post_id'] );
-				
-			};
-			
-			
-			// order by search
-			if( !empty($args['s']) ) {
-				
-				$users = acf_order_by_search( $users, $args['s'] );
-				
-			}
-			
-			
-			// append to $data
-			foreach( $users as $id => $title ) {
-				
-				$data['children'][] = array(
-					'id'	=> $id,
-					'text'	=> $title
+				// vars
+				$users = acf_extract_var( $groups, $group_title );
+				$data = array(
+					'text'		=> $group_title,
+					'children'	=> array()
 				);
 				
+				
+				// append users
+				foreach( array_keys($users) as $user_id ) {
+					
+					$users[ $user_id ] = $this->get_result( $users[ $user_id ], $field, $options['post_id'] );
+					
+				};
+				
+				
+				// order by search
+				if( $is_search && empty($args['orderby']) ) {
+					
+					$users = acf_order_by_search( $users, $args['s'] );
+					
+				}
+				
+				
+				// append to $data
+				foreach( $users as $id => $title ) {
+					
+					$data['children'][] = array(
+						'id'	=> $id,
+						'text'	=> $title
+					);
+					
+				}
+				
+				
+				// append to $r
+				$results[] = $data;
+				
 			}
 			
 			
-			// append to $r
-			$r[] = $data;
-			
 		}
-		
 		
 		// optgroup or single
 		if( !empty($args['role']) && count($args['role']) == 1 ) {
 			
-			$r = $r[0]['children'];
+			$results = $results[0]['children'];
 			
 		}
 		
 		
+		// vars
+		$response = array(
+			'results'	=> $results,
+			'limit'		=> $args['users_per_page']
+		);
+		
+		
 		// return
-		return $r;
-			
+		return $response;
+		
 	}
 	
-	
-	/*
-	*  ajax_query
-	*
-	*  description
-	*
-	*  @type	function
-	*  @date	24/10/13
-	*  @since	5.0.0
-	*
-	*  @param	$post_id (int)
-	*  @return	$post_id (int)
-	*/
-	
-	function ajax_query() {
-		
-		// validate
-		if( !acf_verify_ajax() ) die();
-		
-		
-		// get choices
-		$choices = $this->get_choices( $_POST );
-		
-		
-		// validate
-		if( !$choices ) die();
-		
-		
-		// return JSON
-		echo json_encode( $choices );
-		die();
-			
-	}
 	
 	
 	/*
@@ -244,11 +260,7 @@ class acf_field_user extends acf_field {
 	function get_result( $user, $field, $post_id = 0 ) {
 		
 		// get post_id
-		if( !$post_id ) {
-			
-			$post_id = acf_get_setting('form_data/post_id', get_the_ID());
-			
-		}
+		if( !$post_id ) $post_id = acf_get_form_data('post_id');
 		
 		
 		// vars
@@ -410,13 +422,9 @@ class acf_field_user extends acf_field {
 		acf_render_field_setting( $field, array(
 			'label'			=> __('Allow Null?','acf'),
 			'instructions'	=> '',
-			'type'			=> 'radio',
 			'name'			=> 'allow_null',
-			'choices'		=> array(
-				1				=> __("Yes",'acf'),
-				0				=> __("No",'acf'),
-			),
-			'layout'	=>	'horizontal',
+			'type'			=> 'true_false',
+			'ui'			=> 1,
 		));
 		
 		
@@ -424,13 +432,9 @@ class acf_field_user extends acf_field {
 		acf_render_field_setting( $field, array(
 			'label'			=> __('Select multiple values?','acf'),
 			'instructions'	=> '',
-			'type'			=> 'radio',
 			'name'			=> 'multiple',
-			'choices'		=> array(
-				1				=> __("Yes",'acf'),
-				0				=> __("No",'acf'),
-			),
-			'layout'	=>	'horizontal',
+			'type'			=> 'true_false',
+			'ui'			=> 1,
 		));
 		
 		
@@ -588,8 +592,10 @@ class acf_field_user extends acf_field {
 		
 }
 
-new acf_field_user();
 
-endif;
+// initialize
+acf_register_field_type( new acf_field_user() );
+
+endif; // class_exists check
 
 ?>

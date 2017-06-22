@@ -220,8 +220,6 @@ class WPSEO_Sitemaps_Renderer {
 		$output = "\t<url>\n";
 		$output .= "\t\t<loc>" . $this->encode_url_rfc3986( $url['loc'] ) . "</loc>\n";
 		$output .= empty( $date ) ? '' : "\t\t<lastmod>" . htmlspecialchars( $date ) . "</lastmod>\n";
-		$output .= "\t\t<changefreq>" . $url['chf'] . "</changefreq>\n";
-		$output .= "\t\t<priority>" . str_replace( ',', '.', $url['pri'] ) . "</priority>\n";
 
 		if ( empty( $url['images'] ) ) {
 			$url['images'] = array();
@@ -292,8 +290,11 @@ class WPSEO_Sitemaps_Renderer {
 		$path = parse_url( $url, PHP_URL_PATH );
 
 		if ( ! empty( $path ) && '/' !== $path ) {
-
 			$encoded_path = explode( '/', $path );
+
+			// First decode the path, to prevent double encoding.
+			$encoded_path = array_map( 'rawurldecode', $encoded_path );
+
 			$encoded_path = array_map( 'rawurlencode', $encoded_path );
 			$encoded_path = implode( '/', $encoded_path );
 			$encoded_path = str_replace( '%7E', '~', $encoded_path ); // PHP <5.3.

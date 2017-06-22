@@ -243,11 +243,10 @@ class ODB_Cleaner
 	<?php
 				} // if (!$scheduler)
 			} // if(count($results)>0)
-			
+
+			// NUMBER OF SPAM DELETED FOR LOG FILE
+			$odb_class->log_arr["spam"] = $total_deleted;			
 		} // if($odb_class->odb_rvg_options['clear_spam'] == 'Y')
-		
-		// NUMBER OF SPAM DELETED FOR LOG FILE
-		$odb_class->log_arr["spam"] = $total_deleted;
 	
 	
 		/****************************************************************************************
@@ -278,10 +277,10 @@ class ODB_Cleaner
 	<?php
 				} // if (!$scheduler)
 			} // if(count($results)>0)
+			
+			// NUMBER OF tags DELETED FOR LOG FILE
+			$odb_class->log_arr["tags"] = $total_deleted;
 		} // if($odb_class->odb_rvg_options['clear_tags'] == 'Y')
-		
-		// NUMBER OF tags DELETED FOR LOG FILE
-		$odb_class->log_arr["tags"] = $total_deleted;
 	
 	
 		/****************************************************************************************
@@ -312,10 +311,10 @@ class ODB_Cleaner
 	<?php
 				} // if (!$scheduler)
 			} // if(count($results)>0)
-		} // if($odb_class->odb_rvg_options['clear_transients'] == 'Y')
 		
-		// NUMBER OF transients DELETED FOR LOG FILE
-		$odb_class->log_arr["transients"] = $total_deleted;
+			// NUMBER OF transients DELETED FOR LOG FILE
+			$odb_class->log_arr["transients"] = $total_deleted;			
+		} // if($odb_class->odb_rvg_options['clear_transients'] == 'Y')
 	
 	
 		/****************************************************************************************
@@ -346,11 +345,11 @@ class ODB_Cleaner
 	<?php
 				} // if (!$scheduler)
 			} // if(count($results)>0)
-		} // if($odb_class->odb_rvg_options['clear_pingbacks'] == 'Y')
 		
-		// NUMBER OF pingbacks / trackbacks DELETED (FOR LOG FILE)
-		$odb_class->log_arr["pingbacks"] = $total_deleted;	
-	
+			// NUMBER OF pingbacks / trackbacks DELETED (FOR LOG FILE)
+			$odb_class->log_arr["pingbacks"] = $total_deleted;	
+		} // if($odb_class->odb_rvg_options['clear_pingbacks'] == 'Y')
+
 	
 		/****************************************************************************************
 		 *	DELETE ORPHANS
