@@ -19,8 +19,8 @@
     "maxReleases": 5
   },
   "hosts": {
-    "bottura": {
-      "hosts": ["bottura"],
+    "kwan": {
+      "hosts": ["kwan"],
       "name": "programadeindie.com",
       "projectDir": "/var/www",
       "projectPublicDir": "htdocs",
