@@ -19,13 +19,27 @@
     "maxReleases": 5
   },
   "hosts": {
-    "bottura": {
+    "old": {
       "hosts": ["bottura"],
       "name": "programadeindie.com",
       "projectDir": "/var/www",
       "projectPublicDir": "htdocs",
       "webRootDir": "",
       "hostnames": "programadeindie.com www.programadeindie.com",
+      "webServerUser": "www-data",
+      "webServerGroup": "www-data",
+      "services": {
+        "toRestart": ["php7.0-fpm"],
+        "toReload": ["nginx"]
+      }
+    },
+    "bottura": {
+      "hosts": ["bottura"],
+      "name": "programadeindie.kaisermann.me",
+      "projectDir": "/var/www",
+      "projectPublicDir": "htdocs",
+      "webRootDir": "",
+      "hostnames": "programadeindie.kaisermann.me www.programadeindie.kaisermann.me",
       "webServerUser": "www-data",
       "webServerGroup": "www-data",
       "services": {
